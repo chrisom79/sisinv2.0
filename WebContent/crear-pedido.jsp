@@ -127,10 +127,10 @@
 		        	  selected.cantidad = $("#txtCantidad").val();
 		        	  selected.importe = selected.cantidad * selected.precio;
 		        	  $("#list-prods > tbody:last-child").append("<tr id='"+selected.id+"'>"+
-		        			  "<td>"+ selected.cantidad
-		        			  +"</td><td>"+ selected.nombre
-		        			  +"</td><td>"+ selected.precio
-		        			  +"</td><td class='precio'>"+ selected.importe
+		        			  "<td id='t-cantidad'>"+ selected.cantidad
+		        			  +"</td><td id='t-nombre'>"+ selected.nombre
+		        			  +"</td><td id='t-precio'>"+ selected.precio
+		        			  +"</td><td id='t-importe' class='precio'>"+ selected.importe
 		        			  +"</td><td><button class='btn btn-info fa fa-trash' type='button' onclick='removeRow("+selected.id+")'></button>"
 		        			  +"</td></tr>");
 		        	  $(".precio").each(function() {
@@ -139,7 +139,7 @@
 		        		  	sum += parseFloat(value);
 		        		  }
 		        	  });
-		        	  $("#total").text("Total: " + sum);
+		        	  $("#importe-total").text("Total: " + sum);
 		        	  dialog.dialog( "close" );
 		          },
 		          "Cerrar": function() {
@@ -166,6 +166,15 @@
 				$("#vend-nombre").text("");
 				$("#vend-usuario").text("");
 		    });
+		    
+		    $("#crear-pedido").on("click", function(){
+		    	validateAndSubmit("crear");
+		    });
+		    
+		    $("#imprimir-pedido").on("click", function(){
+		    	validateAndSubmit("imprimir");
+		    });
+		    
 		});
 		
 		function removeRow(id) {
@@ -179,8 +188,28 @@
       		  	sum += parseFloat(value);
       		  }
       	  });
-      	  $("#total").text("Total: " + sum);
+      	  $("#importe-total").text("Total: " + sum);
 		}
+		
+		function convertTableToString() {
+			var list = "";
+			$("#list-prods > tbody > tr").each(function(i, row) {
+				list += $(row).find("td[id*='t-cantidad']").text() + "," + $(row).find("td[id*='t-precio']").text() + "," + $(row).prop("id") + ";";
+			});
+			
+			return list;
+		}
+		
+		function validateAndSubmit(task){
+			$("#task").val(task);
+			$("#prods").val(convertTableToString());
+			$("#idVend").val($("#vend-id").text());
+			$("#nombreVend").val($("#vend-nombre").text());
+			$("#total").val(sum);
+			$("#form-pedido").submit();
+		}
+		
+		
 	</script>
 </head>
 <body>
@@ -200,8 +229,12 @@
 	                    </div>
 	                </div>
 	             <!-- row -->
-	             <form role="form" action="PedidoAction" method="POST">
-	             	<input type="hidden" value="crear" name="task"/>
+	             <form id="form-pedido" role="form" action="PedidoAction" method="POST">
+	             	<input type="hidden" value="" id="task" name="task"/>
+	             	<input type="hidden" value="crear" name="prods" id="prods"/>
+	             	<input type="hidden" value="" name="idVend" id="idVend"/>
+	             	<input type="hidden" value="" name="nombreVend" id="nombreVend"/>
+	             	<input type="hidden" value="" name="total" id="total"/>
 	             	<div class="row">
              		 	<div class="col-lg-5">
 	             		 	<div class="form-group">
@@ -229,27 +262,22 @@
              		 	<div class="col-lg-12">
 	             		 	<div class="form-group">
                                 <label>Nombre</label>
-                                <input class="form-control" name="txtNombre">
+                                <input class="form-control" id="txtNombre" name="txtNombre">
                             </div>
                         </div>
-                        <div class="col-lg-7">
-	             		 	<div class="form-group">
-                                <label>Ciudad</label>
-                                <input class="form-control" name="txtDireccion">
-                            </div>
-                        </div>
+                        
 			         </div>
 			         <div class="row">
              		 	<div class="col-lg-12">
 	             		 	<div class="form-group">
                                 <label>Dirección</label>
-                                <input class="form-control" name="txtDireccion">
+                                <input class="form-control" id="txtDireccion" name="txtDireccion">
                             </div>
                         </div>
-                        <div class="col-lg-5">
+                        <div class="col-lg-7">
 	             		 	<div class="form-group">
-                                <label>Telefono</label>
-                                <input class="form-control" name="txtDireccion">
+                                <label>Ciudad</label>
+                                <input class="form-control" id="txtCiudad" name="txtCiudad">
                             </div>
                         </div>
 			         </div>
@@ -298,7 +326,7 @@
 		 			 <div class="row">
                     	<div class="col-lg-24">
                     		<div  class="alert alert-success">
-			    				<p id="total">Total: 0.00</p>
+			    				<p id="importe-total">Total: 0.00</p>
 			    			</div>
                     	</div>
                     </div>
@@ -342,7 +370,8 @@
 			    			<button id="remove-user" type="button" class="btn btn-info fa fa-trash" ></button>
 			    		</div>
 			    	</div>
-		         	<button type="submit" class="btn btn-primary" >Crear</button>
+		         	<button id="crear-pedido" type="button" class="btn btn-primary" >Crear</button>
+		         	<button id="imprimir-pedido" type="button" class="btn btn-info" >Imprimir</button>
 		         </form>
 	          </div>
 			</div>

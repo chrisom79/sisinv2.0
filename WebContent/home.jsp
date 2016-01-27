@@ -4,7 +4,42 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-	
+	<script src="js/jquery.js"></script>
+	<script src="js/jquery-ui.js"></script>
+	<script  type="text/javascript">
+		$(document).ready(function() {
+			$.ajax({
+				url:"PedidoAction",
+				type:"GET",
+				data:{
+					task : "specific"
+				},
+				dataType: "json",
+				success : function (data) {
+
+					var monthNames = [
+					  "Ene", "Feb", "Mar",
+					  "Abr", "May", "Jun", "Jul",
+					  "Ago", "Sep", "Oct",
+					  "Nov", "Dic"
+					];
+					
+					$.map(data, function(m){
+						var originDate = new Date(m.fecha);
+						var formatDate = originDate.getDate() + "/" + monthNames[originDate.getMonth()] + "/" + originDate.getFullYear();
+						$("#last-pedidos > tbody:last-child").append("<tr>"+
+			        			  "<td id='t-cantidad'>"+ m.id +"</td>"
+			        			  +"<td>"+ formatDate +"</td>"
+			        			  +"<td>"+ m.nombre +"</td>"
+			        			  +"<td>"+ m.total+"</td>"
+			        			  +"</tr>");
+					});
+					
+					
+				}
+			});
+		});
+	</script>
 </head>
 <body>
 	<jsp:include page="navigation.jsp" />
@@ -121,7 +156,7 @@
                             </div>
                             <div class="panel-body">
                                 <div class="table-responsive">
-                                    <table class="table table-bordered table-hover table-striped">
+                                    <table id="last-pedidos" class="table table-bordered table-hover table-striped">
                                         <thead>
                                             <tr>
                                                 <th># Pedido</th>
@@ -131,24 +166,9 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>3326</td>
-                                                <td>10/21/2015</td>
-                                                <td>Michelle Gomez</td>
-                                                <td>$321.33</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3325</td>
-                                                <td>10/21/2015</td>
-                                                <td>Megan Randall</td>
-                                                <td>$234.34</td>
-                                            </tr>
                                             
                                         </tbody>
                                     </table>
-                                </div>
-                                <div class="text-right">
-                                    <a href="#">View All Transactions <i class="fa fa-arrow-circle-right"></i></a>
                                 </div>
                             </div>
                     </div>

@@ -1,5 +1,8 @@
 package com.chrisom.sisinv.dao;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hibernate.Query;
 import org.hibernate.Session;
 
@@ -49,6 +52,17 @@ public class PedidoDAO implements DAOInterface<NotaRemision> {
 	public void deleteByField(String field) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public List<NotaRemision> findLastPedidos(Integer limit) {
+		List<NotaRemision> pedidos = new ArrayList<NotaRemision>();
+		Session session = SessionFactoryDB.getSessionFactory().openSession();
+		Query query = session.createQuery("from NotaRemision order by fecha desc");
+		query.setMaxResults(limit);
+		
+		pedidos = query.list();
+		
+		return pedidos;
 	}
 
 }

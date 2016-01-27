@@ -15,8 +15,8 @@ public class NotaRemisionDetalle implements java.io.Serializable {
 	public NotaRemisionDetalle() {
 	}
 
-	public NotaRemisionDetalle(int id, int cantidad, double precio, String productoId) {
-		this.id = id;
+	public NotaRemisionDetalle(int cantidad, double precio, String productoId) {
+		
 		this.cantidad = cantidad;
 		this.precio = precio;
 		this.productoId = productoId;
