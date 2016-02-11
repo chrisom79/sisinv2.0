@@ -83,29 +83,8 @@
 	             </c:if>
 	             
                 <div class="row">
-                    <div class="col-lg-6 col-md-6">
-                        <div class="panel panel-primary">
-                            <div class="panel-heading">
-                                <div class="row">
-                                    <div class="col-xs-3">
-                                        <i class="fa fa-dropbox fa-5x"></i>
-                                    </div>
-                                    <div class="col-xs-18 text-right">
-                                        <div>Productos</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <a href="buscar-prods.jsp">
-                                <div class="panel-footer">
-                                    <span class="pull-left">Buscar</span>
-                                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                    <div class="clearfix"></div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-6">
-                        <div class="panel panel-green">
+                	<div class="col-lg-6 col-md-6">
+                        <div class="panel panel-default">
                             <div class="panel-heading">
                                 <div class="row">
                                     <div class="col-xs-3">
@@ -125,8 +104,31 @@
                             </a>
                         </div>
                     </div>
+                    
                     <div class="col-lg-6 col-md-6">
-                        <div class="panel panel-yellow">
+                        <div class="panel panel-success">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <i class="fa fa-dropbox fa-5x"></i>
+                                    </div>
+                                    <div class="col-xs-18 text-right">
+                                        <div>Productos</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="buscar-prods.jsp">
+                                <div class="panel-footer">
+                                    <span class="pull-left">Buscar</span>
+                                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6 col-md-6">
+                        <div class="panel panel-info">
                             <div class="panel-heading">
                                 <div class="row">
                                     <div class="col-xs-3">

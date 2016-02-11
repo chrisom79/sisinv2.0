@@ -22,6 +22,10 @@ public class NotaRemisionDetalle implements java.io.Serializable {
 		this.productoId = productoId;
 	}
 
+	public NotaRemisionDetalle getMe(){
+		return this;
+	}
+	
 	public int getId() {
 		return this.id;
 	}

@@ -37,6 +37,15 @@
     <script src="js/jquery-ui.js"></script>
 	<script src="js/typeahead.jquery.js"></script>
 	<script src="js/typeahead.bundle.js"></script>
+	
+	<script language="JavaScript" type="text/javascript">
+		$(document).ready(function() {
+			$("#left-menu li").on("click", function(){
+				$("#left-menu li").removeClass("active");
+				$(this).addClass("active");
+			});
+		});
+	</script>
 </head>
 
 <body>
@@ -59,7 +68,7 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bell"></i> <b class="caret"></b></a>
                     <ul class="dropdown-menu alert-dropdown">
                         <li>
-                            <a href="#">Alert Name <span class="label label-default">Alerta</span></a>
+                            <a href="#">Nuevos pedidos <span class="label label-default">Alerta</span></a>
                         </li>
                         <li>
                             <a href="#">Alert Name <span class="label label-primary">Alerta</span></a>
@@ -101,40 +110,54 @@
             </ul>
             <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
             <div class="collapse navbar-collapse navbar-ex1-collapse">
-                <ul class="nav navbar-nav side-nav">
-                    <li class="active">
+                <ul id='left-menu' class="nav navbar-nav side-nav">
+                    <li id="home">
                         <a href="home.jsp"><i class="fa fa-fw fa-desktop"></i> Inicio</a>
                     </li>
+                    
+                    <li>
+                        <a href="javascript:;" data-toggle="collapse" data-target="#mngmt-pedidos"><i class="fa fa-fw fa-truck"></i> Pedidos<i class="fa fa-fw fa-caret-down"></i></a>
+                        <ul id="mngmt-pedidos" class="collapse">
+                            <li id="crear_pedido">
+                                <a href="crear-pedido.jsp">Crear</a>
+                            </li>
+                            <li id="buscar_pedido">
+                                <a href="buscar-pedido.jsp">Buscar</a>
+                            </li>
+                        </ul>
+                    </li>
+                    
                     <li>
                         <a href="javascript:;" data-toggle="collapse" data-target="#mngmt-prods"><i class="fa fa-fw fa-dropbox"></i> Productos<i class="fa fa-fw fa-caret-down"></i></a>
                         <ul id="mngmt-prods" class="collapse">
-                            <li>
+                            <li id="cread_prod">
                                 <a href="crear-prods.jsp">Agregar</a>
                             </li>
-                            <li>
+                            <li id="buscar_prod">
                                 <a href="buscar-prods.jsp" id="bscrprods">Buscar</a>
                             </li>
                         </ul>
                     </li>
+                    
                     <li>
-                        <a href="javascript:;" data-toggle="collapse" data-target="#mngmt-pedidos"><i class="fa fa-fw fa-truck"></i> Pedidos<i class="fa fa-fw fa-caret-down"></i></a>
-                        <ul id="mngmt-pedidos" class="collapse">
-                            <li>
-                                <a href="crear-pedido.jsp">Crear</a>
+                        <a href="javascript:;" data-toggle="collapse" data-target="#mngmt-users"><i class="fa fa-fw fa-users"></i> Vendedores<i class="fa fa-fw fa-caret-down"></i></a>
+                        <ul id="mngmt-users" class="collapse">
+                            <li id="crear-vend">
+                                <a href="crear-vend.jsp">Agregar</a>
                             </li>
-                            <li>
-                                <a href="#">Buscar</a>
+                            <li id="buscar-vend">
+                                <a href="buscar-vend.jsp">Buscar</a>
                             </li>
                         </ul>
                     </li>
                     <li>
-                        <a href="javascript:;" data-toggle="collapse" data-target="#mngmt-users"><i class="fa fa-fw fa-users"></i> Vendedores<i class="fa fa-fw fa-caret-down"></i></a>
+                        <a href="javascript:;" data-toggle="collapse" data-target="#mngmt-users"><i class="fa fa-fw fa-file"></i> Archivos<i class="fa fa-fw fa-caret-down"></i></a>
                         <ul id="mngmt-users" class="collapse">
-                            <li>
-                                <a href="crear-vend.jsp">Agregar</a>
+                            <li id="importar">
+                                <a href="imp-archivo.jsp">Importar</a>
                             </li>
-                            <li>
-                                <a href="buscar-vend.jsp">Buscar</a>
+                            <li id="exportar">
+                                <a href="exp-archivo.jsp">Exportar</a>
                             </li>
                         </ul>
                     </li>

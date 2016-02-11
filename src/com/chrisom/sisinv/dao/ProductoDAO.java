@@ -90,13 +90,13 @@ public class ProductoDAO implements DAOInterface<Producto> {
 	public List<Producto> findProductoByParameters(String id) {
 		List<Producto> productos = new ArrayList<Producto>();
 		Session session = SessionFactoryDB.getSessionFactory().openSession();
-		StringBuffer querySb = new StringBuffer("from Producto where id like :id or nombre like :id");
-		
-		Query query = session.createQuery(querySb.toString()); 
+		StringBuffer querySb = new StringBuffer("from Producto ");
 		
 		if(id != null && !id.isEmpty()) {
-			query.setParameter("id", "%" + id + "%");
-		} 
+			querySb.append("where id like '%" + id + "%' or nombre like '%" + id + "%'");
+		}
+		
+		Query query = session.createQuery(querySb.toString());
 		
 		productos = query.list();
 		return productos;

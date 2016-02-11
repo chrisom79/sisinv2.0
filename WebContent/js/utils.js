@@ -18,3 +18,8 @@ $(document).ready(function() {
 				}
 			});
 });
+
+function subtractMonthsDate(date, numMonths) {
+	date.setMonth(date.getMonth() - numMonths);
+	return date;
+}

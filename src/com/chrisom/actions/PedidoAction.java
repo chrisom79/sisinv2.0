@@ -51,6 +51,14 @@ public class PedidoAction extends HttpServlet {
 			List<NotaRemision> pedidos = model.findLastPedidos(5);
 			String searchList = gson.toJson(pedidos);
 			response.getWriter().write(searchList);
+		} else if(SISINVConstants.TASK_IMPRIMIR.equalsIgnoreCase(task)) {
+			String id = request.getParameter("id");
+			ReportGenerator rg = new ReportGenerator();
+			
+			NotaRemision nr = model.findPedidoById(Integer.valueOf(id));
+			rg.callingPedido(nr);
+			response.setContentType("text/text");
+			response.getWriter().write("success");
 		}
 	}
 
@@ -62,8 +70,6 @@ public class PedidoAction extends HttpServlet {
 		PedidoModel model = new PedidoModel();
 		
 		if(SISINVConstants.TASK_CREAR.equalsIgnoreCase(task)) {
-			
-			
 			try {
 				NotaRemision nr = createObject(request);
 				
@@ -88,6 +94,39 @@ public class PedidoAction extends HttpServlet {
 			}
 			
 			request.getRequestDispatcher("/crear-pedido.jsp").forward(request, response);
+		} else if(SISINVConstants.TASK_BUSCAR.equalsIgnoreCase(task)) {
+			String nombre = request.getParameter("txtBuscar");
+			String fechaInicio = request.getParameter("fechaInicio");
+			String fechaFinal = request.getParameter("fechaFinal");
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			String fi = null;
+			String ff = null;
+			
+			try {
+				if(fechaInicio != null && !fechaInicio.isEmpty()) {
+					Date d = sdf.parse(fechaInicio);
+					sdf.applyPattern("yyyy/MM/dd");
+					fi = sdf.format(d);
+				}
+				
+				if(fechaFinal != null && !fechaFinal.isEmpty()) {
+					sdf.applyPattern("dd/MM/yyyy");
+					Date d = sdf.parse(fechaFinal);
+					sdf.applyPattern("yyyy/MM/dd");
+					ff = sdf.format(d);
+				}
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			List<NotaRemision> pedidos = model.findPedidosByParameters(nombre, fi, ff);
+			//request.setCharacterEncoding("UTF-8");
+			request.setAttribute("pedidos", pedidos);
+			request.setAttribute("nombre", nombre);
+			request.setAttribute("fechaInicio", fechaInicio);
+			request.setAttribute("fechaFinal", fechaFinal);
+			request.getRequestDispatcher("/buscar-pedido.jsp").forward(request, response);
 		}
 	}
 	
