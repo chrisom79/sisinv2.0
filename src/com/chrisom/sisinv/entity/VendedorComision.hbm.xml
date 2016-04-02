@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 31-mar-2016 21:17:32 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.chrisom.sisinv.entity.VendedorComision" table="vendedor_comision">
+        <id name="id" type="int">
+            <column name="comision_id" />
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="vendedor" class="com.chrisom.sisinv.entity.Vendedor" fetch="select">
+            <column name="vendedor_id" length="7" not-null="true"/>
+        </many-to-one>
+        <property name="fechaInicio" type="timestamp">
+            <column name="fecha_inicio" length="19" not-null="true"/>
+        </property>
+        <property name="fechaFinal" type="timestamp">
+            <column name="fecha_final" length="19" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>
