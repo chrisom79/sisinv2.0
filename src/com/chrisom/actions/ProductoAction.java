@@ -1,9 +1,7 @@
 package com.chrisom.actions;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.chrisom.sisinv.entity.Producto;
 import com.chrisom.sisinv.model.PedidoModel;
 import com.chrisom.sisinv.model.ProductoModel;
-import com.chrisom.sisinv.utils.ProductoUtils;
 import com.chrisom.sisinv.utils.SISINVConstants;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -42,14 +39,14 @@ public class ProductoAction extends HttpServlet {
 		ProductoModel prModel = new ProductoModel();
 		PedidoModel peModel = new PedidoModel();
 		
-		if(SISINVConstants.TASK_INIT.equalsIgnoreCase(task)) {
+		if(SISINVConstants.TASKS.TASK_INIT.equalsIgnoreCase(task)) {
 			Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 			response.setContentType("application/json");
 			Long id = peModel.getNewId();
 			String searchElement = gson.toJson(id);
 			response.getWriter().write(searchElement);
 			
-		} else if(SISINVConstants.TASK_QSEARCH.equalsIgnoreCase(task)) {
+		} else if(SISINVConstants.TASKS.TASK_QSEARCH.equalsIgnoreCase(task)) {
 			Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 			response.setContentType("application/json");
 			String term = request.getParameter("term");
@@ -67,12 +64,13 @@ public class ProductoAction extends HttpServlet {
 		String task = request.getParameter("task");
 		ProductoModel model = new ProductoModel();
 		
-		if(SISINVConstants.TASK_BUSCAR.equalsIgnoreCase(task)) {
+		if(SISINVConstants.TASKS.TASK_BUSCAR.equalsIgnoreCase(task)) {
 			String texto = request.getParameter("txtBuscar");
 			List<Producto> prods = model.findProductoByParameters(texto);
 			request.setAttribute("productos", prods);
+			request.setAttribute("txtBuscar", texto);
 			request.getRequestDispatcher("/buscar-prods.jsp").forward(request, response);
-		} else if(SISINVConstants.TASK_CREAR.equalsIgnoreCase(task)) {
+		} else if(SISINVConstants.TASKS.TASK_CREAR.equalsIgnoreCase(task)) {
 			String codigo = request.getParameter("txtCodigo");
 			String nombre = request.getParameter("txtNombre");
 			Double precio = Double.valueOf(request.getParameter("txtPrecioComp"));
@@ -85,6 +83,33 @@ public class ProductoAction extends HttpServlet {
 				request.setAttribute("mensaje", "El producto ha sido guardado");
 			}
 			request.getRequestDispatcher("/home.jsp").forward(request, response);
+		} else if(SISINVConstants.PROD_TASKS.GET_PROD.equalsIgnoreCase(task)) {
+			String productoId = request.getParameter("productoId");
+			Producto prod = model.findProductoByCode(productoId);
+			request.setAttribute("prod", prod);
+			request.getRequestDispatcher("/editar-prods.jsp").forward(request, response);
+		}  else if(SISINVConstants.TASKS.TASK_EDITAR.equalsIgnoreCase(task)) {
+			String codigo = request.getParameter("txtCodigo");
+			String nombre = request.getParameter("txtNombre");
+			Double precio = Double.valueOf(request.getParameter("txtPrecioComp"));
+			Integer ganancia = Integer.valueOf(request.getParameter("txtGanancia"));
+			Boolean iva = Boolean.valueOf(request.getParameter("txtIVA"));
+			String oldCodigo = request.getParameter("prevId");
+			Producto producto = new Producto(codigo, nombre, precio, ganancia, iva);
+			if(!codigo.equals(oldCodigo)) {
+				model.deleteById(oldCodigo);
+			}
+			model.updateProducto(producto);
+			request.setAttribute("mensaje", "El producto ha sido actualizado");
+			request.getRequestDispatcher("/home.jsp").forward(request, response);
+		} else if(SISINVConstants.TASKS.TASK_BORRAR.equalsIgnoreCase(task)) {
+			String productoId = request.getParameter("productoId");
+			model.deleteById(productoId);
+			String texto = request.getParameter("txtBuscar");
+			List<Producto> prods = model.findProductoByParameters(texto);
+			request.setAttribute("txtBuscar", texto);
+			request.setAttribute("productos", prods);
+			request.getRequestDispatcher("/buscar-prods.jsp").forward(request, response);
 		}
 		
 		

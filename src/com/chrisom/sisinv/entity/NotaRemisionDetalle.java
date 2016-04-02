@@ -10,6 +10,7 @@ public class NotaRemisionDetalle implements java.io.Serializable {
 	private int cantidad;
 	private double precio;
 	private String productoId;
+	private Boolean cargado;
 	private NotaRemision notaRemision;
 
 	public NotaRemisionDetalle() {
@@ -66,4 +67,13 @@ public class NotaRemisionDetalle implements java.io.Serializable {
 		this.notaRemision = notaRemision;
 	}
 
+	public Boolean getCargado() {
+		return cargado;
+	}
+
+	public void setCargado(Boolean cargado) {
+		this.cargado = cargado;
+	}
+
+	
 }

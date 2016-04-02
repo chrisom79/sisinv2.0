@@ -17,6 +17,9 @@
         <property name="productoId" type="string">
             <column name="producto_id" length="30" not-null="true" />
         </property>
+        <property name="cargado" type="java.lang.Boolean">
+            <column name="cargado" default="0" />
+        </property>
          <many-to-one name="notaRemision" class="com.chrisom.sisinv.entity.NotaRemision" fetch="select" >
         	<column name="notaremision_id" not-null="true"></column>
         </many-to-one>

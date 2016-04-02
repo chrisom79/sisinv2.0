@@ -7,6 +7,8 @@
 	<link href="css/jquery-ui.css" rel="stylesheet">
 	<script src="js/jquery.js"></script>
 	<script src="js/jquery-ui.js"></script>
+	<script src="js/utils.js"></script>
+	<script src="js/jquery.noty.packaged.js"></script>
 	<script  type="text/javascript">
 		var selected = null;
 		var sum;
@@ -126,7 +128,7 @@
 		          "Agregar": function() {
 		        	  sum = 0.0;
 		        	  selected.cantidad = $("#txtCantidad").val();
-		        	  selected.importe = selected.cantidad * selected.precio;
+		        	  selected.importe = Math.round((selected.cantidad * selected.precio) * 100) / 100;
 		        	  $("#list-prods > tbody:last-child").append("<tr id='"+selected.id+"'>"+
 		        			  "<td id='t-cantidad'>"+ selected.cantidad
 		        			  +"</td><td id='t-nombre'>"+ selected.nombre
@@ -141,6 +143,7 @@
 		        		  }
 		        	  });
 		        	  $("#importe-total").text("Total: " + sum);
+		        	  
 		        	  dialog.dialog( "close" );
 		          },
 		          "Cerrar": function() {
@@ -148,8 +151,8 @@
 		          }
 		        },
 		        close: function() {
-		        	
-		           
+		        	$("#searchProd").val("");
+		        	$("#searchProd").focus();
 		        }
 		      });
 		    
@@ -169,7 +172,28 @@
 		    });
 		    
 		    $("#crear-pedido").on("click", function(){
-		    	validateAndSubmit("crear");
+		    	var n = noty({
+		            text        : '¿Deseas imprimir el pedido?',
+		            type        : 'information',
+		            dismissQueue: true,
+		            layout      : 'topRight',
+		            theme       : 'defaultTheme',
+		            buttons     : [
+		                {addClass: 'btn btn-primary', text: 'Si', onClick: function ($noty) {
+		                	validateAndSubmit("imprimir");
+		                    $noty.close();
+		                    
+		                }
+		                },
+		                {addClass: 'btn btn-info', text: 'No', onClick: function ($noty) {
+		                	validateAndSubmit("crear");
+		                    $noty.close();
+		             
+		                }
+		                }
+		            ]
+		        });
+		    	
 		    });
 		    
 		    $("#imprimir-pedido").on("click", function(){
@@ -232,7 +256,7 @@
 	             <!-- row -->
 	             <form id="form-pedido" role="form" action="PedidoAction" method="POST">
 	             	<input type="hidden" value="" id="task" name="task"/>
-	             	<input type="hidden" value="crear" name="prods" id="prods"/>
+	             	<input type="hidden" value="" name="prods" id="prods"/>
 	             	<input type="hidden" value="" name="idVend" id="idVend"/>
 	             	<input type="hidden" value="" name="nombreVend" id="nombreVend"/>
 	             	<input type="hidden" value="" name="total" id="total"/>

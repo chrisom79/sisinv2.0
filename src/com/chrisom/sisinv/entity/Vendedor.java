@@ -20,7 +20,10 @@ public class Vendedor implements java.io.Serializable {
 	private String usuario;
 	private String password;
 	private String email;
+	private Integer comision;
+	private Boolean habilitado;
 	private Set notaRemisions = new HashSet(0);
+	private Set comisiones = new HashSet(0);
 
 	public Vendedor() {
 	}
@@ -109,4 +112,29 @@ public class Vendedor implements java.io.Serializable {
 		this.notaRemisions = notaRemisions;
 	}
 
+	public Integer getComision() {
+		return comision;
+	}
+
+	public void setComision(Integer comision) {
+		this.comision = comision;
+	}
+
+	public Boolean getHabilitado() {
+		return habilitado;
+	}
+
+	public void setHabilitado(Boolean habilitado) {
+		this.habilitado = habilitado;
+	}
+
+	public Set getComisiones() {
+		return comisiones;
+	}
+
+	public void setComisiones(Set comisiones) {
+		this.comisiones = comisiones;
+	}
+	
+	
 }

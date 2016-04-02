@@ -26,6 +26,9 @@
         <property name="ciudad" type="string">
             <column name="ciudad" length="45" />
         </property>
+        <property name="fechaPagoComision" type="timestamp">
+            <column name="fecha_pago_comision" length="19" />
+        </property>
         <set name="notaRemisionDetalles" table="nota_remision_detalle" inverse="true" lazy="true" fetch="select" cascade="all">
             <key>
                 <column name="notaremision_id" not-null="true" />

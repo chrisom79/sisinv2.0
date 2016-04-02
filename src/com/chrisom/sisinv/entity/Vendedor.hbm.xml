@@ -26,11 +26,23 @@
         <property name="email" type="string">
             <column name="email" length="50" />
         </property>
+        <property name="comision" type="int">
+            <column name="porc_comision" />
+        </property>
+        <property name="habilitado" type="java.lang.Boolean">
+            <column name="habilitado" default="0" />
+        </property>
         <set name="notaRemisions" table="nota_remision" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="vendedor_id" length="7" not-null="true" />
             </key>
             <one-to-many class="com.chrisom.sisinv.entity.NotaRemision" />
+        </set>
+        <set name="comisiones" table="vendedor_comision" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="vendedor_id" length="7" not-null="true" />
+            </key>
+            <one-to-many class="com.chrisom.sisinv.entity.VendedorComision" />
         </set>
     </class>
 </hibernate-mapping>

@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SISINV - Abarrotera Hermanos Cervantes</title>
+    <title>SISINV 2.0</title>
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/sb-admin.css" rel="stylesheet">
@@ -39,12 +39,7 @@
 	<script src="js/typeahead.bundle.js"></script>
 	
 	<script language="JavaScript" type="text/javascript">
-		$(document).ready(function() {
-			$("#left-menu li").on("click", function(){
-				$("#left-menu li").removeClass("active");
-				$(this).addClass("active");
-			});
-		});
+		
 	</script>
 </head>
 
@@ -64,33 +59,6 @@
             </div>
             <!-- Top Menu Items -->
             <ul class="nav navbar-right top-nav">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bell"></i> <b class="caret"></b></a>
-                    <ul class="dropdown-menu alert-dropdown">
-                        <li>
-                            <a href="#">Nuevos pedidos <span class="label label-default">Alerta</span></a>
-                        </li>
-                        <li>
-                            <a href="#">Alert Name <span class="label label-primary">Alerta</span></a>
-                        </li>
-                        <li>
-                            <a href="#">Alert Name <span class="label label-success">Alerta</span></a>
-                        </li>
-                        <li>
-                            <a href="#">Alert Name <span class="label label-info">Alerta</span></a>
-                        </li>
-                        <li>
-                            <a href="#">Alert Name <span class="label label-warning">Alerta</span></a>
-                        </li>
-                        <li>
-                            <a href="#">Alert Name <span class="label label-danger">Alerta</span></a>
-                        </li>
-                        <li class="divider"></li>
-                        <li>
-                            <a href="#">View All</a>
-                        </li>
-                    </ul>
-                </li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Juan Cervantes <b class="caret"></b></a>
                     <ul class="dropdown-menu">
@@ -151,13 +119,21 @@
                         </ul>
                     </li>
                     <li>
-                        <a href="javascript:;" data-toggle="collapse" data-target="#mngmt-users"><i class="fa fa-fw fa-file"></i> Archivos<i class="fa fa-fw fa-caret-down"></i></a>
-                        <ul id="mngmt-users" class="collapse">
+                        <a href="javascript:;" data-toggle="collapse" data-target="#mngmt-files"><i class="fa fa-fw fa-file"></i> Archivos<i class="fa fa-fw fa-caret-down"></i></a>
+                        <ul id="mngmt-files" class="collapse">
                             <li id="importar">
-                                <a href="imp-archivo.jsp">Importar</a>
+                                <a href="imp-archivo.jsp">Importar productos</a>
                             </li>
                             <li id="exportar">
-                                <a href="exp-archivo.jsp">Exportar</a>
+                                <a href="exp-archivo.jsp">Exportar productos</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="javascript:;" data-toggle="collapse" data-target="#mngmt-reports"><i class="fa fa-fw fa-bar-chart"></i> Reportes<i class="fa fa-fw fa-caret-down"></i></a>
+                        <ul id="mngmt-reports" class="collapse">
+                            <li id="comisiones">
+                                <a href="comisiones.jsp">Comisiones</a>
                             </li>
                         </ul>
                     </li>

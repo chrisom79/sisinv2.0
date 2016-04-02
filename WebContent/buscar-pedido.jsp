@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
+<%@ page import="com.chrisom.sisinv.utils.SISINVConstants"%> 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -48,6 +49,12 @@
 				}); 
 			  
 		  }
+		  
+		  function cargarPedido(numeroPedido){
+			  $("#task").val('<%= SISINVConstants.PEDIDO_TASKS.LOAD_PEDIDO %>');
+			  $("#pedidoId").val(numeroPedido);
+			  $("#buscarForm").submit();
+		  }
   	</script>
 </head>
 <body>
@@ -67,10 +74,11 @@
                 </div>
 				<!-- End Page Heading -->
 				
-				 <form role="form" action="PedidoAction" method="POST">
+				 <form id="buscarForm" role="form" action="PedidoAction" method="POST">
 				 	<!-- row -->
 					<div class="row">
-					 	<input type="hidden" value="buscar" name="task"/>
+					 	<input type="hidden" value="buscar" name="task" id="task"/>
+					 	<input type="hidden" value="" name="pedidoId" id="pedidoId"/>
 					 	<div class="col-lg-12">
 	             		 	<div class="form-group">
                                 <label>Nombre o número de pedidos</label>
@@ -95,7 +103,7 @@
                         </div>
 					</div>
 					<!-- end row -->
-					<button type="submit" class="btn btn-primary" >Buscar</button>
+					<button type="submit" class="btn btn-info" >Buscar</button>
 				</form>	
 					 <!-- row -->
 					 <div class="row">
@@ -112,7 +120,8 @@
                                                <th>Fecha</th>
                                                <th>Cliente</th>
                                                <th>Total</th>
-                                               <th>Editar</th>
+                                               <th>Imprimir</th>
+                                               <th>Cargar pedido</th>
                                            </tr>
                                        </thead>
                                        <tbody>
@@ -123,9 +132,11 @@
 											      <td><c:out value="${item.nombre}" /></td>
 											      <td><c:out value="${item.total}" /></td>
 											      <td><button class='btn btn-info fa fa-print' type='button' onclick='imprimirPedido("${item.id}")'></button></td>
+											      <td><button class='btn btn-info fa fa-arrow-circle-o-up' type='button' onclick='cargarPedido("${item.id}")'></button></td>
 											    </tr>
 											  </c:forEach>
                                        </tbody>
+                                      </table>
 					 			</div>
 					 		</div>
 					 	</div>

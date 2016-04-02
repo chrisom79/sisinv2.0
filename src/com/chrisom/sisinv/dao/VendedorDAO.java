@@ -85,23 +85,19 @@ public class VendedorDAO implements DAOInterface<Vendedor>{
 		List<Vendedor> vendedores = new ArrayList<Vendedor>();
 		Session session = SessionFactoryDB.getSessionFactory().openSession();
 		
-		StringBuffer querySb = new StringBuffer("from Vendedor where ");
+		StringBuffer querySb = new StringBuffer("from Vendedor where habilitado = 1 ");
 		
 		if(nombre != null && !nombre.isEmpty()) {
-			querySb.append("nombre like :name ");
+			querySb.append("and nombre like :name ");
 		}
 		
 		if(telefono != null && !telefono.isEmpty()) {
-			if(nombre != null && !nombre.isEmpty())
-				querySb.append("and ");
-			querySb.append("telefono like :tel ");
+			querySb.append("and telefono like :tel ");
 			
 		}
 		
 		if(usuario != null && !usuario.isEmpty()) {
-			if(telefono != null && !telefono.isEmpty())
-				querySb.append("and ");
-			querySb.append("usuario like :user ");
+			querySb.append("and usuario like :user ");
 		}
 		
 		Query query = session.createQuery(querySb.toString());
@@ -128,7 +124,7 @@ public class VendedorDAO implements DAOInterface<Vendedor>{
 		List<Vendedor> vendedores = new ArrayList<Vendedor>();
 		Session session = SessionFactoryDB.getSessionFactory().openSession();
 		
-		StringBuffer querySb = new StringBuffer("from Vendedor where nombre like :value or usuario like :value");
+		StringBuffer querySb = new StringBuffer("from Vendedor where (nombre like :value or usuario like :value) and habilitado = 1");
 		Query query = session.createQuery(querySb.toString());
 		
 		query.setParameter("value", "%" + value + "%");
@@ -141,8 +137,25 @@ public class VendedorDAO implements DAOInterface<Vendedor>{
 		Session session = SessionFactoryDB.getSessionFactory().openSession();
 		Vendedor vendedor = null;
 		try {
-			Query query = session.createQuery("from Vendedor where usuario = :usuario");
+			Query query = session.createQuery("from Vendedor where usuario = :usuario and habilitado = 1");
 			query.setParameter("usuario", username);
+		
+			vendedor = (Vendedor) query.uniqueResult();
+		} catch (Exception ex) {
+			System.out.println(ex.getStackTrace());
+		} finally {
+			//SessionFactoryDB.shutdown();
+		}
+		
+		return vendedor;
+	}
+	
+	public Vendedor findVendedorById(String value) {
+		Session session = SessionFactoryDB.getSessionFactory().openSession();
+		Vendedor vendedor = null;
+		try {
+			Query query = session.createQuery("from Vendedor where id like :id");
+			query.setParameter("id", value);
 		
 			vendedor = (Vendedor) query.uniqueResult();
 		} catch (Exception ex) {
@@ -155,7 +168,7 @@ public class VendedorDAO implements DAOInterface<Vendedor>{
 	}
 
 	@Override
-	public void update(Vendedor element) {
+	public void update(Vendedor element) throws Exception {
 		Session session = SessionFactoryDB.getSessionFactory().openSession();
 		try {
 			
@@ -163,21 +176,36 @@ public class VendedorDAO implements DAOInterface<Vendedor>{
 			session.update(element);
 			session.getTransaction().commit();
 		} catch (Exception ex) {
+			System.out.println(ex.getStackTrace().toString());
 			session.getTransaction().rollback();
-		} finally {
-			//SessionFactoryDB.shutdown();
-		}
+			throw new Exception();
+			
+		} 
 		
 	}
 
+	public void logicDeleteById(String field) {
+		Session session = SessionFactoryDB.getSessionFactory().openSession();
+		try {
+			session.beginTransaction();
+			Query query = session.createQuery("UPDATE Vendedor set habilitado = 0 WHERE id = :id");
+			query.setParameter("id", field);
+			query.executeUpdate();
+			session.getTransaction().commit();
+		} catch (Exception ex) {
+			System.out.println(ex.getStackTrace().toString());
+			session.getTransaction().rollback();
+		} 
+	}
+	
 	@Override
 	public void deleteByField(String field) {
 		Session session = SessionFactoryDB.getSessionFactory().openSession();
 		try {
 			
 			session.beginTransaction();
-			Query query = session.createQuery("delete Vendedor where usuario = :usuario");
-			query.setParameter("usuario", field);
+			Query query = session.createQuery("delete Vendedor where id = :id");
+			query.setParameter("id", field);
 			query.executeUpdate();
 			session.getTransaction().commit();
 		} catch (Exception ex) {
@@ -187,4 +215,6 @@ public class VendedorDAO implements DAOInterface<Vendedor>{
 		}
 		
 	}
+	
+	
 }

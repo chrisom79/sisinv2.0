@@ -101,5 +101,14 @@ public class ProductoDAO implements DAOInterface<Producto> {
 		productos = query.list();
 		return productos;
 	}
+	
+	public Integer getMaxIdToInsert() {
+		String id = null;
+		Session session = SessionFactoryDB.getSessionFactory().openSession();
+		Query query = session.createQuery("select id from Producto where id < 100000 order by id desc");
+		query.setMaxResults(1);
+		id = (String) query.uniqueResult();
+		return Integer.valueOf(id);
+	}
 
 }

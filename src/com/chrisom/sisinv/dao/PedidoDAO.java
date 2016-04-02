@@ -7,6 +7,7 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.transform.Transformers;
+import org.hibernate.type.BooleanType;
 import org.hibernate.type.DoubleType;
 import org.hibernate.type.IntegerType;
 import org.hibernate.type.StringType;
@@ -60,6 +61,23 @@ public class PedidoDAO implements DAOInterface<NotaRemision> {
 		
 	}
 	
+	public void loadProductosToPedido(List<String> items, NotaRemision pedido) {
+		Session session = SessionFactoryDB.getSessionFactory().openSession();
+		try {
+			session.beginTransaction();
+			for(String item : items) {
+				Query query = session.createQuery("UPDATE NotaRemisionDetalle set cargado = 1 WHERE productoId = :id and notaRemision = :nota");
+				query.setParameter("id", item);
+				query.setParameter("nota", pedido);
+				query.executeUpdate();
+			}
+			session.getTransaction().commit();
+		} catch (Exception ex) {
+			System.out.println(ex.getStackTrace().toString());
+			session.getTransaction().rollback();
+		} 
+	}
+	
 	public List<NotaRemision> findLastPedidos(Integer limit) {
 		List<NotaRemision> pedidos = new ArrayList<NotaRemision>();
 		Session session = SessionFactoryDB.getSessionFactory().openSession();
@@ -110,12 +128,31 @@ public class PedidoDAO implements DAOInterface<NotaRemision> {
 		return pedido;
 	}
 	
+	public List<NotaRemision>  findPedidosByVendedor(String idVend, String fechaInicio, String fechaFinal) {
+		List<NotaRemision> pedidos = new ArrayList<NotaRemision>();
+		Session session = SessionFactoryDB.getSessionFactory().openSession();
+		StringBuffer sb = new StringBuffer("from NotaRemision where vendedor like '" + idVend + "' ");
+		
+		if(fechaInicio != null) {
+			sb.append("and fecha >= '" + fechaInicio + "' ");
+		}
+		
+		if(fechaFinal != null) {
+			sb.append("and fecha <= '" + fechaFinal + "' ");
+		}
+
+		Query query = session.createQuery(sb.toString());
+		
+		pedidos = query.list();
+		return pedidos;
+	}
+	
 	public List<ItemPedido> findItemsByPedido(Integer id) {
 		List<ItemPedido> items = null;
 		Session session = SessionFactoryDB.getSessionFactory().openSession();
 		
 		if(id != null) {
-			StringBuffer sb = new StringBuffer("select nrd.cantidad, p.producto_id as id, p.nombre as articulo, nrd.precio, (nrd.precio * nrd.cantidad) as importe ");
+			StringBuffer sb = new StringBuffer("select nrd.cantidad, p.producto_id as id, p.nombre as articulo, nrd.precio, nrd.cargado ");
 			sb.append("from nota_remision nr ");
 			sb.append("inner join nota_remision_detalle nrd on nr.notaremision_id = nrd.notaremision_id ");
 			sb.append("inner join producto p on nrd.producto_id = p.producto_id where nr.notaremision_id = :id ");
@@ -124,7 +161,7 @@ public class PedidoDAO implements DAOInterface<NotaRemision> {
 					.addScalar("id", new StringType())
 					.addScalar("articulo", new StringType())
 					.addScalar("precio", new DoubleType())
-					.addScalar("importe", new DoubleType())
+					.addScalar("cargado", new BooleanType())
 					.setResultTransformer(Transformers.aliasToBean(ItemPedido.class));
 			query.setParameter("id", id);
 			items = query.list();

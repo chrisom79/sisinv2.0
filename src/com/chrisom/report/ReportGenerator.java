@@ -30,25 +30,30 @@ public class ReportGenerator {
 	 public void callingPedido(NotaRemision nr) {
 	     try {
 	    	 Map<String, Object> parameters = new HashMap<String, Object> ();
-	    	 SimpleDateFormat dt = new SimpleDateFormat("dd/MMM/yyyy"); 
+	    	 SimpleDateFormat dt = new SimpleDateFormat("dd/MMM/yy hh:mm:ss"); 
+	    	 SimpleDateFormat dtNameFile = new SimpleDateFormat("ddMMyymm"); 
 	    	 PedidoModel pm = new PedidoModel();
 	    	 List<ItemPedido> items = pm.findItemsByPedido(nr.getId());
 	    	 JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(items, true);
-	    
-	    	/* parameters.put("FECHA", dt.format(new Date()));
-	    	 parameters.put("CLIENTE_NOMBRE", nr.getNombre());
-	    	 parameters.put("NUMERO", nr.getId());
-	    	 parameters.put("VENDEDOR_NOMBRE", nr.getVendedor().getNombre());*/
+	    	 
+	    	 StringBuffer nameFile = new StringBuffer("pedido_");
+	    	 nameFile.append(dtNameFile.format(nr.getFecha()));
+	    	 nameFile.append(".pdf");
+	    	 
+	    	 Double sum = items.stream().mapToDouble(item -> item.getImporte()).sum();
 	    	 parameters.put("DataFile", "CustomDataSource.java");
+	    	 parameters.put("TOTAL", sum);
+	    	 parameters.put("NUM_ARTICULOS", items.size());
+	    	 parameters.put("FECHA_ACTUAL", dt.format(new Date()));
 	    	 
 	    	 InputStream input = getClass().getResourceAsStream("printed_pedido.jrxml");
 	    	 JasperDesign jasperDesign = JRXmlLoader.load(input);
 			 JasperReport report = JasperCompileManager.compileReport(jasperDesign);
 			 JasperPrint print = JasperFillManager.fillReport(report, parameters, ds);
-			 JasperExportManager.exportReportToPdfFile(print, "pedido.pdf");
+			 JasperExportManager.exportReportToPdfFile(print, nameFile.toString());
 		     
 			 if (Desktop.isDesktopSupported()) {
-		        File myFile = new File("pedido.pdf");
+		        File myFile = new File(nameFile.toString());
 		        Desktop.getDesktop().open(myFile);
 			}
 	     } catch (JRException ex) {

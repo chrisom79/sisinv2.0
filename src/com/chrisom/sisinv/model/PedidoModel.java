@@ -40,4 +40,12 @@ public class PedidoModel {
 	public List<ItemPedido> findItemsByPedido(Integer id) {
 		return dao.findItemsByPedido(id);
 	}
+	
+	public List<NotaRemision> findPedidosByVendedor(String idVend, String fechaInicio, String fechaFinal) {
+		return dao.findPedidosByVendedor(idVend, fechaInicio, fechaFinal);
+	}
+	
+	public void loadProductosToPedido(List<String> items, NotaRemision pedido) {
+		dao.loadProductosToPedido(items, pedido);
+	}
 }

@@ -13,8 +13,9 @@ public class VendedorModel {
 		dao.insert(vendedor);		
 	}
 	
-	public void updateVendedor() {
-		
+	public void updateVendedor(Vendedor vendedor) throws Exception {
+		vendedor.setPassword(dao.findVendedorById(vendedor.getId()).getPassword());
+		dao.update(vendedor);
 	}
 	
 	public String createId(String nombre) {
@@ -57,7 +58,10 @@ public class VendedorModel {
 		return dao.findVendedorByUsuario(username);
 	}
 	
-	public void deleteByUsuario(String usuario){
-		dao.deleteByField(usuario);
+	public Vendedor findVendedorById(String value) {
+		return dao.findVendedorById(value);
+	}
+	public void deleteById(String usuario){
+		dao.logicDeleteById(usuario);
 	}
 }

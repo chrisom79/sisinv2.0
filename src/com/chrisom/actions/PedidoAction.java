@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.chrisom.report.ReportGenerator;
+import com.chrisom.sisinv.entity.ItemPedido;
 import com.chrisom.sisinv.entity.NotaRemision;
 import com.chrisom.sisinv.entity.NotaRemisionDetalle;
 import com.chrisom.sisinv.entity.Vendedor;
@@ -45,13 +47,13 @@ public class PedidoAction extends HttpServlet {
 		String task = request.getParameter("task");
 		PedidoModel model = new PedidoModel();
 		
-		if(SISINVConstants.SPECIFIC_SEARCH.equalsIgnoreCase(task)) {
+		if(SISINVConstants.TASKS.SPECIFIC_SEARCH.equalsIgnoreCase(task)) {
 			Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 			response.setContentType("application/json");
 			List<NotaRemision> pedidos = model.findLastPedidos(5);
 			String searchList = gson.toJson(pedidos);
 			response.getWriter().write(searchList);
-		} else if(SISINVConstants.TASK_IMPRIMIR.equalsIgnoreCase(task)) {
+		} else if(SISINVConstants.TASKS.TASK_IMPRIMIR.equalsIgnoreCase(task)) {
 			String id = request.getParameter("id");
 			ReportGenerator rg = new ReportGenerator();
 			
@@ -69,7 +71,16 @@ public class PedidoAction extends HttpServlet {
 		String task = request.getParameter("task");
 		PedidoModel model = new PedidoModel();
 		
-		if(SISINVConstants.TASK_CREAR.equalsIgnoreCase(task)) {
+		String nombre = request.getParameter("txtBuscar");	
+		String fechaInicio = request.getParameter("fechaInicio");
+		String fechaFinal = request.getParameter("fechaFinal");
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		String fi = null;
+		String ff = null;
+		
+		
+		
+		if(SISINVConstants.TASKS.TASK_CREAR.equalsIgnoreCase(task)) {
 			try {
 				NotaRemision nr = createObject(request);
 				
@@ -83,24 +94,19 @@ public class PedidoAction extends HttpServlet {
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
-		} else if(SISINVConstants.TASK_IMPRIMIR.equalsIgnoreCase(task)) {
+		} else if(SISINVConstants.TASKS.TASK_IMPRIMIR.equalsIgnoreCase(task)) {
 			ReportGenerator rg = new ReportGenerator();
 			NotaRemision nr = null;
 			try {
 				nr = createObject(request);
+				String id = model.insertPedido(nr);
 				rg.callingPedido(nr);
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
 			
-			request.getRequestDispatcher("/crear-pedido.jsp").forward(request, response);
-		} else if(SISINVConstants.TASK_BUSCAR.equalsIgnoreCase(task)) {
-			String nombre = request.getParameter("txtBuscar");
-			String fechaInicio = request.getParameter("fechaInicio");
-			String fechaFinal = request.getParameter("fechaFinal");
-			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-			String fi = null;
-			String ff = null;
+			request.getRequestDispatcher("/home.jsp").forward(request, response);
+		} else if(SISINVConstants.TASKS.TASK_BUSCAR.equalsIgnoreCase(task)) {
 			
 			try {
 				if(fechaInicio != null && !fechaInicio.isEmpty()) {
@@ -116,7 +122,6 @@ public class PedidoAction extends HttpServlet {
 					ff = sdf.format(d);
 				}
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -126,6 +131,35 @@ public class PedidoAction extends HttpServlet {
 			request.setAttribute("nombre", nombre);
 			request.setAttribute("fechaInicio", fechaInicio);
 			request.setAttribute("fechaFinal", fechaFinal);
+			request.getRequestDispatcher("/buscar-pedido.jsp").forward(request, response);
+		} else if(SISINVConstants.PEDIDO_TASKS.LOAD_PEDIDO.equalsIgnoreCase(task)) {
+			String id = request.getParameter("pedidoId");
+			String fecha = null;
+			sdf = new SimpleDateFormat("dd/MM/yyyy");
+			
+			NotaRemision pedido = model.findPedidoById(Integer.valueOf(id));
+			List<ItemPedido> items = model.findItemsByPedido(Integer.valueOf(id));
+			if(pedido.getFecha() != null) {
+				fecha = sdf.format(pedido.getFecha());
+			}
+			
+			request.setAttribute("fecha", fecha);
+			request.setAttribute("pedido", pedido);
+			request.setAttribute("items", items);
+			
+			request.getRequestDispatcher("/cargar-pedido.jsp").forward(request, response);
+		}  else if(SISINVConstants.PEDIDO_TASKS.LOAD_PRODS.equalsIgnoreCase(task)) {
+			loadProdsToPedido(request);
+			
+			request.getRequestDispatcher("/buscar-pedido.jsp").forward(request, response);
+		} else if(SISINVConstants.PEDIDO_TASKS.PRINT_PEDIDO.equalsIgnoreCase(task)) {
+			String id = request.getParameter("idPedido");
+			ReportGenerator rg = new ReportGenerator();
+			NotaRemision nr = model.findPedidoById(Integer.valueOf(id));
+			
+			rg.callingPedido(nr);
+			loadProdsToPedido(request);
+			
 			request.getRequestDispatcher("/buscar-pedido.jsp").forward(request, response);
 		}
 	}
@@ -181,11 +215,25 @@ public class PedidoAction extends HttpServlet {
 			}
 			
 			NotaRemisionDetalle nrd = new NotaRemisionDetalle(convCantidad, convPrecio, elements[2]);
+			nrd.setCargado(Boolean.FALSE);
 			nrd.setNotaRemision(nr);
 			nr.getNotaRemisionDetalles().add(nrd);
 		}
 		
 		return nr;
+	}
+	
+	private void loadProdsToPedido(HttpServletRequest request) {
+		PedidoModel model = new PedidoModel();
+		String id = request.getParameter("idPedido");
+		String prods = request.getParameter("prods");
+		
+		NotaRemision nr = new NotaRemision();
+		nr.setId(Integer.valueOf(id));
+		
+		List<String> prodToLoad = Arrays.asList(prods.split(","));
+		
+		model.loadProductosToPedido(prodToLoad, nr);
 	}
 
 }

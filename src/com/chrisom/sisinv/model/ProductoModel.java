@@ -30,4 +30,8 @@ public class ProductoModel {
 	public Producto findProductoByCode(String id) {
 		return dao.findProductoByCode(id);
 	}
+	
+	public Integer getMaxIdToInsert(){
+		return dao.getMaxIdToInsert();
+	}
 }

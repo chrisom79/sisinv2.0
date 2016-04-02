@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.chrisom.sisinv.entity.Producto;
 import com.chrisom.sisinv.entity.Vendedor;
 import com.chrisom.sisinv.model.VendedorModel;
 import com.chrisom.sisinv.utils.Algorithms;
@@ -39,7 +38,7 @@ public class VendedorAction extends HttpServlet {
 		String task = request.getParameter("task");
 		VendedorModel model = new VendedorModel();
 		
-		if(SISINVConstants.TASK_QSEARCH.equalsIgnoreCase(task)) {
+		if(SISINVConstants.TASKS.TASK_QSEARCH.equalsIgnoreCase(task)) {
 			Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 			response.setContentType("application/json");
 			String term = request.getParameter("term");
@@ -56,12 +55,13 @@ public class VendedorAction extends HttpServlet {
 		String task = request.getParameter("task");
 		VendedorModel model = new VendedorModel();
 		
-		if(SISINVConstants.TASK_CREAR.equalsIgnoreCase(task))  {
+		if(SISINVConstants.TASKS.TASK_CREAR.equalsIgnoreCase(task))  {
 			String nombre = request.getParameter("txtNombre");
 			String direccion = request.getParameter("txtDireccion");
 			String email = request.getParameter("txtEmail");
 			String telefono = request.getParameter("txtTelefono");
 			String usuario = request.getParameter("txtUsuario");
+			String comision = request.getParameter("txtComision");
 			
 			if(!model.existsUsername(usuario)) {
 				String defPass = Algorithms.encryptMD5("password");
@@ -70,7 +70,8 @@ public class VendedorAction extends HttpServlet {
 				Vendedor vendedor = new Vendedor(id, nombre, telefono, usuario, defPass);
 				vendedor.setDireccion(direccion);
 				vendedor.setEmail(email);
-				
+				vendedor.setComision(Integer.valueOf(comision));
+				vendedor.setHabilitado(Boolean.TRUE);
 				model.insertVendedor(vendedor);
 				
 				if(id != null) {
@@ -81,7 +82,45 @@ public class VendedorAction extends HttpServlet {
 				request.setAttribute("error", "El nombre de usuario ya existe");
 			}
 			request.getRequestDispatcher("/home.jsp").forward(request, response);
-		} else if(SISINVConstants.TASK_BUSCAR.equalsIgnoreCase(task)) {
+		} else if(SISINVConstants.TASKS.TASK_BUSCAR.equalsIgnoreCase(task)) {
+			String texto = request.getParameter("txtBuscar");
+			List<Vendedor> vends = model.findVendedoresByParameters(texto);
+			request.setAttribute("vends", vends);
+			request.getRequestDispatcher("/buscar-vend.jsp").forward(request, response);
+		} else if(SISINVConstants.VEND_TASKS.GET_VEND.equalsIgnoreCase(task)) {
+			String id = request.getParameter("vendId");
+			Vendedor vend = model.findVendedorById(id);
+			request.setAttribute("vend", vend);
+			request.getRequestDispatcher("/editar-vend.jsp").forward(request, response);
+		}  else if(SISINVConstants.TASKS.TASK_EDITAR.equalsIgnoreCase(task)) {
+			String id = request.getParameter("id");
+			String nombre = request.getParameter("txtNombre");
+			String direccion = request.getParameter("txtDireccion");
+			String email = request.getParameter("txtEmail");
+			String telefono = request.getParameter("txtTelefono");
+			String usuario = request.getParameter("txtUsuario");
+			String comision = request.getParameter("txtComision");
+			
+			Vendedor vendedor = new Vendedor();
+			vendedor.setId(id);
+			vendedor.setNombre(nombre);
+			vendedor.setTelefono(telefono);
+			vendedor.setUsuario(usuario);
+			vendedor.setDireccion(direccion);
+			vendedor.setEmail(email);
+			vendedor.setComision(Integer.valueOf(comision));
+			vendedor.setHabilitado(Boolean.TRUE);
+			try {
+				model.updateVendedor(vendedor);
+				request.setAttribute("mensaje", "El vendedor ha sido actualizado");
+			} catch(Exception ex) {
+				request.setAttribute("error", "El vendedor no fue actualizado");
+			}
+			
+			request.getRequestDispatcher("/home.jsp").forward(request, response);
+		} else if(SISINVConstants.TASKS.TASK_BORRAR.equalsIgnoreCase(task)) {
+			String id = request.getParameter("vendId");
+			model.deleteById(id);
 			String texto = request.getParameter("txtBuscar");
 			List<Vendedor> vends = model.findVendedoresByParameters(texto);
 			request.setAttribute("vends", vends);

@@ -22,6 +22,7 @@ public class NotaRemision implements java.io.Serializable {
 	private String nombre;
 	private String direccion;
 	private String ciudad;
+	private Date fechaPagoComision;
 	private Set<NotaRemisionDetalle> notaRemisionDetalles = new HashSet<NotaRemisionDetalle>(0);
 
 	public NotaRemision() {
@@ -110,4 +111,13 @@ public class NotaRemision implements java.io.Serializable {
 		this.notaRemisionDetalles = notaRemisionDetalles;
 	}
 
+	public Date getFechaPagoComision() {
+		return fechaPagoComision;
+	}
+
+	public void setFechaPagoComision(Date fechaPagoComision) {
+		this.fechaPagoComision = fechaPagoComision;
+	}
+	
+	
 }

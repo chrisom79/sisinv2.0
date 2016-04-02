@@ -14,6 +14,7 @@
         <mapping resource="com/chrisom/sisinv/entity/NotaRemision.hbm.xml" />
         <mapping resource="com/chrisom/sisinv/entity/NotaRemisionDetalle.hbm.xml" />
         <mapping resource="com/chrisom/sisinv/entity/Vendedor.hbm.xml" />
-         <mapping resource="com/chrisom/sisinv/entity/Producto.hbm.xml" />
+        <mapping resource="com/chrisom/sisinv/entity/Producto.hbm.xml" />
+        <mapping resource="com/chrisom/sisinv/entity/VendedorComision.hbm.xml" />
     </session-factory>
 </hibernate-configuration>
