@@ -8,15 +8,17 @@ import com.chrisom.sisinv.entity.Producto;
 public class ProductoModel {
 	ProductoDAO dao = new ProductoDAO();
 	public String insertProducto(Producto producto) {
+		producto.setHabilitado(Boolean.TRUE);
 		return dao.insert(producto);
 	}
 	
 	public void updateProducto(Producto producto) {
+		producto.setHabilitado(Boolean.TRUE);
 		dao.update(producto);
 	}
 	
 	public void deleteById(String id) {
-		dao.deleteByField(id);
+		dao.logicDeleteById(id);
 	}
 	
 	public List<Producto> findProductoByNombre(String nombre) {

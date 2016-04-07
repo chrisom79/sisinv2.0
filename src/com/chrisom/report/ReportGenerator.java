@@ -31,13 +31,13 @@ public class ReportGenerator {
 	     try {
 	    	 Map<String, Object> parameters = new HashMap<String, Object> ();
 	    	 SimpleDateFormat dt = new SimpleDateFormat("dd/MMM/yy hh:mm:ss"); 
-	    	 SimpleDateFormat dtNameFile = new SimpleDateFormat("ddMMyymm"); 
+	    	 SimpleDateFormat dtNameFile = new SimpleDateFormat("ddMMyymmss"); 
 	    	 PedidoModel pm = new PedidoModel();
 	    	 List<ItemPedido> items = pm.findItemsByPedido(nr.getId());
 	    	 JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(items, true);
 	    	 
 	    	 StringBuffer nameFile = new StringBuffer("pedido_");
-	    	 nameFile.append(dtNameFile.format(nr.getFecha()));
+	    	 nameFile.append(dtNameFile.format(new Date()));
 	    	 nameFile.append(".pdf");
 	    	 
 	    	 Double sum = items.stream().mapToDouble(item -> item.getImporte()).sum();

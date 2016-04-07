@@ -169,5 +169,20 @@ public class PedidoDAO implements DAOInterface<NotaRemision> {
 		
 		return items;
 	}
+	
+	public void registerComision(String field) throws Exception {
+		Session session = SessionFactoryDB.getSessionFactory().openSession();
+		try {
+			session.beginTransaction();
+			Query query = session.createQuery("UPDATE NotaRemision set fecha_pago_comision = CURRENT_DATE WHERE id = :id");
+			query.setParameter("id", Integer.valueOf(field));
+			query.executeUpdate();
+			session.getTransaction().commit();
+		} catch (Exception ex) {
+			System.out.println(ex.getStackTrace().toString());
+			session.getTransaction().rollback();
+			throw new Exception();
+		} 
+	}
 
 }

@@ -20,6 +20,9 @@
         <property name="iva" type="java.lang.Boolean">
             <column name="iva" />
         </property>
+        <property name="habilitado" type="java.lang.Boolean">
+            <column name="habilitado" />
+        </property>
         <set name="notaRemisionDetalles" table="nota_remision_detalle" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="producto_id" length="7" not-null="true" />

@@ -48,4 +48,8 @@ public class PedidoModel {
 	public void loadProductosToPedido(List<String> items, NotaRemision pedido) {
 		dao.loadProductosToPedido(items, pedido);
 	}
+	
+	public void registerComision(String id) throws Exception {
+		dao.registerComision(id);
+	}
 }

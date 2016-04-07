@@ -1,7 +1,6 @@
 package com.chrisom.actions;
 
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,8 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.chrisom.sisinv.entity.NotaRemision;
 import com.chrisom.sisinv.entity.Vendedor;
-import com.chrisom.sisinv.entity.VendedorComision;
-import com.chrisom.sisinv.model.ComisionModel;
 import com.chrisom.sisinv.model.PedidoModel;
 import com.chrisom.sisinv.model.VendedorModel;
 import com.chrisom.sisinv.utils.ProductoUtils;
@@ -84,7 +81,7 @@ public class ReporteAction extends HttpServlet {
 				List<NotaRemision> pedidos = model.findPedidosByVendedor(idVend, fi, ff);
 				Vendedor vendedor = vModel.findVendedorById(idVend);
 				if(vendedor.getComision() != null) {
-					Double sum = (pedidos.stream().mapToDouble(item -> item.getTotal()).sum()) * (vendedor.getComision() / 100.0);
+					Double sum = (pedidos.stream().mapToDouble(item -> (item.getFechaPagoComision()==null?item.getTotal():0.0)).sum()) * (vendedor.getComision() / 100.0);
 					request.setAttribute("comision", ProductoUtils.round(sum, 2));
 				}
 				request.setAttribute("pedidos", pedidos);
@@ -95,37 +92,19 @@ public class ReporteAction extends HttpServlet {
 				request.getRequestDispatcher("/comisiones.jsp").forward(request, response);
 			} 
 		} else if(SISINVConstants.REPORT_TYPES.PAGAR_COMISION.equalsIgnoreCase(task)) {
-			String idVend = request.getParameter("idVendedor");
-			String fechaInicio = request.getParameter("fechaInicio");
-			String fechaFinal = request.getParameter("fechaFinal");
-			DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-			ComisionModel model = new ComisionModel();
-			Date convFI = null;
-			Date convFF = null;
+			String comisiones = request.getParameter("comision-pedido");
+			PedidoModel model = new PedidoModel();
 			try {
-				convFI = df.parse(fechaInicio);
-				convFF = df.parse(fechaFinal);
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			Vendedor vend = new Vendedor();
-			vend.setId(idVend);
-			
-			VendedorComision vc = new VendedorComision();
-			vc.setVendedor(vend);
-			vc.setFechaInicio(convFI);
-			vc.setFechaFinal(convFF);
-			
-			String id = model.insertComision(vc);
-			
-			if(id != null) {
-				request.setAttribute("mensaje", "Se ha registrado la comision pagada");
-			} else {
+				for(String id : comisiones.split(",")){
+					model.registerComision(id);
+				}
+				request.setAttribute("mensaje", "Se ha registrado la comision");
+				
+			} catch(Exception ex) {
 				request.setAttribute("error", "Ocurrió un error al registrar la comision");
 			}
 			request.getRequestDispatcher("/home.jsp").forward(request, response);
+			
 		}
 	}
 

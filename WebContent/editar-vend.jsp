@@ -4,9 +4,40 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-	<script language="JavaScript" type="text/javascript"  src="js/jquery.js"></script>
+	<jsp:include page="header.jsp" />
 	<script  type="text/javascript">
 	$(document).ready(function() {
+		$("#form-vend input[type='text']").tooltipster({ 
+	    	trigger : 'custom', 
+	    	onlyOne : false, 
+	    	position : 'right' 
+	    });
+		 
+		 $("#form-vend").validate({
+	    	rules : {
+	    		txtNombre : {
+	    			required : true
+	    		},
+	    		txtUsuario : {
+	    			required : true
+	    		},
+	    		txtComision : {
+	    			required : true,
+	    			number : true
+	    		},
+	    		txtEmail : {
+	    			email : true
+	    		}
+	    	},
+	    	 errorPlacement: function (error, element) {
+	             $(element).tooltipster('update', $(error).text());
+	             $(element).tooltipster('show');
+	         },
+	         success: function (label, element) {
+	             $(element).tooltipster('hide');
+	         }
+	    });
+		 
 		$("#chkIVA").on('click', function(){
 			if($('#chkIVA:checked').length > 0) {
 				$("#chkIVA").val(true);

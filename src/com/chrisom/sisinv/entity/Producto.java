@@ -21,6 +21,8 @@ public class Producto implements java.io.Serializable {
 	private int porcentaje;
 	@Expose
 	private Boolean iva;
+	@Expose
+	private Boolean habilitado;
 	private Set notaRemisionDetalles = new HashSet(0);
 
 	public Producto() {
@@ -98,11 +100,19 @@ public class Producto implements java.io.Serializable {
 	public void setNotaRemisionDetalles(Set notaRemisionDetalles) {
 		this.notaRemisionDetalles = notaRemisionDetalles;
 	}
+	
+	public Boolean getHabilitado() {
+		return habilitado;
+	}
+
+	public void setHabilitado(Boolean habilitado) {
+		this.habilitado = habilitado;
+	}
 
 	@Override
 	public String toString() {
 		return "[id=" + id + ", nombre=" + nombre + ", precioCompra=" + precioCompra + ", porcentaje="
-				+ porcentaje + ", iva=" + iva + "]";
+				+ porcentaje + ", iva=" + iva + ", habilitado=" +habilitado+"]";
 	}
 
 	

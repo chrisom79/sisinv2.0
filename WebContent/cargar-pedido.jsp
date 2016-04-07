@@ -5,12 +5,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-	<link href="css/jquery-ui.css" rel="stylesheet">
-	<link href="css/extra-styles.css" rel="stylesheet">
-	<script src="js/jquery.js"></script>
-	<script src="js/jquery-ui.js"></script>
-	<script src="js/utils.js"></script>
-	<script src="js/jquery.noty.packaged.js"></script>
+	<jsp:include page="header.jsp" />
 	<script  type="text/javascript">
 		$(function() {
 			$(":checkbox").click(function() {
@@ -29,13 +24,13 @@
 		            theme       : 'defaultTheme',
 		            buttons     : [
 		                {addClass: 'btn btn-primary', text: 'Si', onClick: function ($noty) {
-		                	submitCarga('<%= SISINVConstants.TASKS.TASK_IMPRIMIR %>');
+		                	submitCarga('<%= SISINVConstants.PEDIDO_TASKS.PRINT_PEDIDO %>');
 		                    $noty.close();
 		                    
 		                }
 		                },
 		                {addClass: 'btn btn-info', text: 'No', onClick: function ($noty) {
-		                	submitCarga('<%= SISINVConstants.PEDIDO_TASKS.PRINT_PEDIDO %>');
+		                	submitCarga('<%= SISINVConstants.PEDIDO_TASKS.LOAD_PRODS %>');
 		                    $noty.close();
 		             
 		                }

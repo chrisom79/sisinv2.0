@@ -4,7 +4,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-	<script language="JavaScript" type="text/javascript"  src="js/jquery.js"></script>
+	<jsp:include page="header.jsp" />
+	
 	<script  type="text/javascript">
 	$(document).ready(function() {
 		$(window).keydown(function(event){
@@ -21,6 +22,38 @@
 				$("#chkIVA").val(false);
 			}
 	 	});
+		
+		 $("#form-prod input[class='form-control']").tooltipster({ 
+	    	trigger : 'custom', 
+	    	onlyOne : false, 
+	    	position : 'right' 
+	    });
+		 
+		 $("#form-prod").validate({
+	    	rules : {
+	    		txtCodigo : {
+	    			required : true
+	    		},
+	    		txtNombre : {
+	    			required : true
+	    		},
+	    		txtPrecioComp : {
+	    			required : true,
+	    			number : true
+	    		},
+	    		txtGanancia : {
+	    			required : true,
+	    			number : true
+	    		}
+	    	},
+	    	 errorPlacement: function (error, element) {
+	             $(element).tooltipster('update', $(error).text());
+	             $(element).tooltipster('show');
+	         },
+	         success: function (label, element) {
+	             $(element).tooltipster('hide');
+	         }
+	    });
 	});
 	</script>
 </head>
@@ -41,7 +74,7 @@
                     </div>
                 </div>
              <!-- row -->
-             <form role="form" action="ProductoAction" method="POST">
+             <form id="form-prod" role="form" action="ProductoAction" method="POST">
              	<input type="hidden" value="crear" name="task"/>
 	            <jsp:include page="campos_prods.jsp" />
 	            <button type="submit" class="btn btn-primary" >Crear</button>

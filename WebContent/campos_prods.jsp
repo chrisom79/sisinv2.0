@@ -8,12 +8,12 @@
     </div>
 </div>
 <div class="row">
- 		 	<div class="col-lg-12">
-  		 	<div class="form-group">
-                    <label>Nombre</label>
-                    <input class="form-control" name="txtNombre" value="${prod.nombre}">
-                </div>
-            </div>
+	<div class="col-lg-12">
+		<div class="form-group">
+        	<label>Nombre</label>
+            <input class="form-control" name="txtNombre" value="${prod.nombre}">
+    	</div>
+	</div>
 </div>
 <div class="row">
  		 	<div class="col-lg-5">

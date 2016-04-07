@@ -5,14 +5,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-	<link href="css/jquery-ui.css" rel="stylesheet">
-	<script src="js/jquery.js"></script>
-	<script src="js/jquery-ui.js"></script>
-	<script src="js/utils.js"></script>
-	<script src="js/jquery.noty.packaged.js"></script>
+	<jsp:include page="header.jsp" />
 	<script>
 		function editProducto(id){
-			$("#task").val("getProd");
+			$("#task").val('<%= SISINVConstants.PROD_TASKS.GET_PROD %>');
 			$("#productoId").val(id);
 			$("#buscarForm").submit();
 		}

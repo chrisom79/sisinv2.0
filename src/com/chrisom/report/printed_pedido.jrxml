@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.1.1.final using JasperReports Library version 6.1.1  -->
-<!-- 2016-02-21T09:24:20 -->
+<!-- 2016-04-04T15:39:08 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="printed_pedido" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="76942a3b-f79d-4a5b-bdab-0cd815806841">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<style name="Table_TH" mode="Opaque" backcolor="#A9A9A9">
@@ -254,11 +254,11 @@
 	<pageFooter>
 		<band height="59" splitType="Stretch">
 			<staticText>
-				<reportElement x="220" y="0" width="60" height="15" uuid="325392d2-7b7a-445a-8ec5-f16398265726">
+				<reportElement x="190" y="0" width="90" height="15" uuid="325392d2-7b7a-445a-8ec5-f16398265726">
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 				</reportElement>
 				<textElement textAlignment="Right"/>
-				<text><![CDATA[Articulos ]]></text>
+				<text><![CDATA[No.  Articulos:  ]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="280" y="0" width="70" height="15" uuid="91a5a064-942e-48ab-8859-369eb788abb5"/>

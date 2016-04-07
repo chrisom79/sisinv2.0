@@ -8,11 +8,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>SISINV 2.0</title>
-	<link href="css/jquery-ui.css" rel="stylesheet">
-	<script src="js/jquery.js"></script>
-	<script src="js/jquery-ui.js"></script>
-	<script src="js/utils.js"></script>
-	<script src="js/jquery.noty.packaged.js"></script>
+	<jsp:include page="header.jsp" />
   	<script>
 		  $(function() {
 		    $("#fechaInicio").datepicker({
@@ -26,6 +22,44 @@
 		    	maxDate: 'today'
 		    });
 		    $("#fechaFinal").datepicker( "setDate", new Date());
+		    
+		    $( "#dialog" ).dialog({
+		    	height: 300,
+		    	autoOpen: false,
+		    	closeOnEscape: false,
+		    	open: function(event, ui) { $(".ui-dialog-titlebar-close", ui.dialog | ui).hide(); }
+		    });
+		    
+		    $(document).ajaxStart(function() {
+	    	  $(this).show();
+	    	});
+		    $(document).ajaxStop(function() {
+	    	  $(this).close();
+	    	});
+		    
+		    $("#buscar-form input[type='text']").tooltipster({ 
+		    	trigger : 'custom', 
+		    	onlyOne : false, 
+		    	position : 'right' 
+		    });
+			 
+			 $("#buscar-form").validate({
+		    	rules : {
+		    		fechaInicio : {
+		    			required : true
+		    		},
+		    		fechaFinal : {
+		    			required : true
+		    		}
+		    	},
+		    	 errorPlacement: function (error, element) {
+		             $(element).tooltipster('update', $(error).text());
+		             $(element).tooltipster('show');
+		         },
+		         success: function (label, element) {
+		             $(element).tooltipster('hide');
+		         }
+		    });
 		  });
 		  
 		  function imprimirPedido(numeroPedido){
@@ -53,7 +87,7 @@
 		  function cargarPedido(numeroPedido){
 			  $("#task").val('<%= SISINVConstants.PEDIDO_TASKS.LOAD_PEDIDO %>');
 			  $("#pedidoId").val(numeroPedido);
-			  $("#buscarForm").submit();
+			  $("#buscar-form").submit();
 		  }
   	</script>
 </head>
@@ -74,15 +108,15 @@
                 </div>
 				<!-- End Page Heading -->
 				
-				 <form id="buscarForm" role="form" action="PedidoAction" method="POST">
+				 <form id="buscar-form" role="form" action="PedidoAction" method="POST">
 				 	<!-- row -->
 					<div class="row">
 					 	<input type="hidden" value="buscar" name="task" id="task"/>
 					 	<input type="hidden" value="" name="pedidoId" id="pedidoId"/>
 					 	<div class="col-lg-12">
 	             		 	<div class="form-group">
-                                <label>Nombre o número de pedidos</label>
-                                <input class="form-control" placeholder="Texto a buscar" name="txtBuscar" value="${nombre}">
+                                <label>Nombre del cliente o número de pedido</label>
+                                <input type="text" class="form-control" placeholder="Texto a buscar" name="txtBuscar" value="${nombre}">
                             </div>
                         </div>
 					</div>
@@ -92,13 +126,13 @@
 						<div class="col-lg-4">
                         	<div class="form-group">
                                 <label>Fecha inicio</label>
-                                <input class="form-control" name="fechaInicio" id="fechaInicio" value="${fechaInicio}">
+                                <input type="text" class="form-control" name="fechaInicio" id="fechaInicio" value="${fechaInicio}">
                             </div>
                         </div>
                         <div class="col-lg-4">
                         	<div class="form-group">
                                 <label>Fecha final</label>
-                                <input class="form-control" name="fechaFinal" id="fechaFinal" value="${fechaInicio}">
+                                <input type="text" class="form-control" name="fechaFinal" id="fechaFinal" value="${fechaInicio}">
                             </div>
                         </div>
 					</div>
@@ -146,6 +180,10 @@
 				
 			</div>
 		</div>
+		<div id="dialog" title="Cargando">
+			<i class="fa fa-spinner fa-pulse fa-3x"></i>
+		</div>
 	</div>
+	
 </body>
 </html>

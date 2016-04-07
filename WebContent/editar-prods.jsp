@@ -3,10 +3,40 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<jsp:include page="header.jsp" />
 <script type="text/javascript">
 	$(document).ready(function() {
-		
+		 $("#form-prod input[class='form-control']").tooltipster({ 
+	    	trigger : 'custom', 
+	    	onlyOne : false, 
+	    	position : 'right' 
+	    });
+		 
+		 $("#form-prod").validate({
+	    	rules : {
+	    		txtCodigo : {
+	    			required : true
+	    		},
+	    		txtNombre : {
+	    			required : true
+	    		},
+	    		txtPrecioComp : {
+	    			required : true,
+	    			number : true
+	    		},
+	    		txtGanancia : {
+	    			required : true,
+	    			number : true
+	    		}
+	    	},
+	    	 errorPlacement: function (error, element) {
+	             $(element).tooltipster('update', $(error).text());
+	             $(element).tooltipster('show');
+	         },
+	         success: function (label, element) {
+	             $(element).tooltipster('hide');
+	         }
+	    });
 	});
 </script>
 </head>
@@ -26,7 +56,7 @@
                     </div>
                 </div>
              <!-- row -->
-             <form role="form" action="ProductoAction" method="POST">
+             <form id="form-prod" role="form" action="ProductoAction" method="POST">
              	<input type="hidden" value="editar" name="task"/>
              	<input type="hidden" value="${prod.id}" name="prevId"/>
 	            <jsp:include page="campos_prods.jsp" />

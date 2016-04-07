@@ -4,11 +4,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-	<link href="css/jquery-ui.css" rel="stylesheet">
-	<script src="js/jquery.js"></script>
-	<script src="js/jquery-ui.js"></script>
-	<script src="js/utils.js"></script>
-	<script src="js/jquery.noty.packaged.js"></script>
+	<jsp:include page="header.jsp" />
+	
 	<script  type="text/javascript">
 		var selected = null;
 		var sum;
@@ -111,6 +108,7 @@
 					$("#vend-id").text(ui.item.id);
 					$("#vend-nombre").text(ui.item.nombre);
 					$("#vend-usuario").text(ui.item.usuario);
+					$("#searchVend").tooltipster('hide');
 				}
 			})
 			.autocomplete( "instance" )._renderItem = function( ul, item ) {
@@ -163,6 +161,7 @@
 		    	$("#dialog-precio").text("$ " + selected.precio);
 		    	$("#txtCantidad").val("");
 		        dialog.dialog( "open" );
+		        $("#add-prod").tooltipster('hide');
 		     });
 		    
 		    $("#remove-user").on("click", function(){
@@ -172,34 +171,66 @@
 		    });
 		    
 		    $("#crear-pedido").on("click", function(){
-		    	var n = noty({
-		            text        : '¿Deseas imprimir el pedido?',
-		            type        : 'information',
-		            dismissQueue: true,
-		            layout      : 'topRight',
-		            theme       : 'defaultTheme',
-		            buttons     : [
-		                {addClass: 'btn btn-primary', text: 'Si', onClick: function ($noty) {
-		                	validateAndSubmit("imprimir");
-		                    $noty.close();
-		                    
-		                }
-		                },
-		                {addClass: 'btn btn-info', text: 'No', onClick: function ($noty) {
-		                	validateAndSubmit("crear");
-		                    $noty.close();
-		             
-		                }
-		                }
-		            ]
-		        });
+		    	if ($('#form-pedido').valid() && validateInfo()) {
+			    	var n = noty({
+			            text        : '¿Deseas imprimir el pedido?',
+			            type        : 'information',
+			            dismissQueue: true,
+			            layout      : 'topRight',
+			            theme       : 'defaultTheme',
+			            buttons     : [
+			                {addClass: 'btn btn-primary', text: 'Si', onClick: function ($noty) {
+			                	submitInfo("imprimir");
+			                    $noty.close();
+			                    
+			                }
+			                },
+			                {addClass: 'btn btn-info', text: 'No', onClick: function ($noty) {
+			                	submitInfo("crear");
+			                    $noty.close();
+			             
+			                }
+			                }
+			            ]
+			        });
+		    	}
 		    	
 		    });
 		    
 		    $("#imprimir-pedido").on("click", function(){
 		    	validateAndSubmit("imprimir");
+		    }); 
+		    
+		    $("#form-pedido input[class='form-control']").tooltipster({ 
+		    	trigger : 'custom', 
+		    	onlyOne : false, 
+		    	position : 'right' 
 		    });
 		    
+		    $("#searchVend").tooltipster({ 
+		    	trigger : 'custom', 
+		    	onlyOne : false, 
+		    	position : 'right' 
+		    });
+		    
+		    $("#add-prod").tooltipster({ 
+		    	trigger : 'custom', 
+		    	onlyOne : false, 
+		    	position : 'right' 
+		    });
+		    
+		    $("#form-pedido").validate({
+		    	rules : {
+		    		txtNombre : "required"
+		    	},
+		    	 errorPlacement: function (error, element) {
+		             $(element).tooltipster('update', $(error).text());
+		             $(element).tooltipster('show');
+		         },
+		         success: function (label, element) {
+		             $(element).tooltipster('hide');
+		         }
+		    });
 		});
 		
 		function removeRow(id) {
@@ -225,7 +256,7 @@
 			return list;
 		}
 		
-		function validateAndSubmit(task){
+		function submitInfo(task){
 			$("#task").val(task);
 			$("#prods").val(convertTableToString());
 			$("#idVend").val($("#vend-id").text());
@@ -234,7 +265,20 @@
 			$("#form-pedido").submit();
 		}
 		
-		
+		function validateInfo() {
+			if($("#list-prods tr").length < 2) {
+				$("#add-prod").tooltipster('update', 'Es necesario agregar al menos un producto');
+	            $("#add-prod").tooltipster('show');
+	            return false;
+			} 
+			
+			if($("#vend-id").text() === "") {
+				$("#searchVend").tooltipster('update', 'Es necesario agregar al vendedor');
+	            $("#searchVend").tooltipster('show');
+	            return false;
+			}
+			return true;
+		}
 	</script>
 </head>
 <body>
@@ -368,7 +412,7 @@
 	                <div class="row">
 	                	<div class="col-lg-12">
 	             		 	<div  class="form-group">
-                                <input id="searchVend" class="form-control" type="text" placeholder="Nombre o usuario del vendedor">
+                                <input id="searchVend" name="searchVend" class="form-control" placeholder="Nombre o usuario del vendedor">
                             </div>
                         </div>
 	                </div>

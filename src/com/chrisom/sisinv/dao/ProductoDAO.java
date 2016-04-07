@@ -63,11 +63,25 @@ public class ProductoDAO implements DAOInterface<Producto> {
 		}
 	}
 	
+	public void logicDeleteById(String field) {
+		Session session = SessionFactoryDB.getSessionFactory().openSession();
+		try {
+			session.beginTransaction();
+			Query query = session.createQuery("UPDATE Producto set habilitado = 0 WHERE id = :id");
+			query.setParameter("id", field);
+			query.executeUpdate();
+			session.getTransaction().commit();
+		} catch (Exception ex) {
+			System.out.println(ex.getStackTrace().toString());
+			session.getTransaction().rollback();
+		} 
+	}
+	
 	@SuppressWarnings("unchecked")
 	public List<Producto> findProductoByNombre(String nombre){
 		List<Producto> productos = new ArrayList<Producto>();
 		Session session = SessionFactoryDB.getSessionFactory().openSession();
-		Query query = session.createQuery("from Producto where nombre like :nombre");
+		Query query = session.createQuery("from Producto where habilitado = 1 and nombre like :nombre");
 		
 		query.setParameter("nombre", "%" + nombre + "%");
 		
@@ -78,7 +92,7 @@ public class ProductoDAO implements DAOInterface<Producto> {
 	public Producto findProductoByCode(String id){
 		Producto producto = new Producto();
 		Session session = SessionFactoryDB.getSessionFactory().openSession();
-		Query query = session.createQuery("from Producto where id like :id");
+		Query query = session.createQuery("from Producto where habilitado = 1 and id like :id");
 		
 		query.setParameter("id", id);
 		
@@ -90,10 +104,10 @@ public class ProductoDAO implements DAOInterface<Producto> {
 	public List<Producto> findProductoByParameters(String id) {
 		List<Producto> productos = new ArrayList<Producto>();
 		Session session = SessionFactoryDB.getSessionFactory().openSession();
-		StringBuffer querySb = new StringBuffer("from Producto ");
+		StringBuffer querySb = new StringBuffer("from Producto where habilitado = 1 ");
 		
 		if(id != null && !id.isEmpty()) {
-			querySb.append("where id like '%" + id + "%' or nombre like '%" + id + "%'");
+			querySb.append("and (id like '%" + id + "%' or nombre like '%" + id + "%')");
 		}
 		
 		Query query = session.createQuery(querySb.toString());

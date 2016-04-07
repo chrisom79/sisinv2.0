@@ -3,15 +3,11 @@
 <%@ page import="com.chrisom.sisinv.utils.SISINVConstants"%> 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+ <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-	<link href="css/jquery-ui.css" rel="stylesheet">
-	<script src="js/jquery.js"></script>
-	<script src="js/jquery-ui.js"></script>
-	<script src="js/utils.js"></script>
-	<script src="js/jquery.noty.packaged.js"></script>
+<jsp:include page="header.jsp" />
 <script type="text/javascript">
 	var selUser;
 	$(document).ready(function() {
@@ -68,7 +64,39 @@
 	    
 	    $("#pagar-comision").on('click', function() {
 	    	$("#task").val("<%= SISINVConstants.REPORT_TYPES.PAGAR_COMISION %>");
+	    	var list = "";
+	    	$("#list-pedidos > tbody > tr[class!='selected']").each(function(i, row) {
+	    		list += $(row).find("td[id*='t-id']").text() + ",";
+	    	});
+	    	$("#comision-pedido").val(list);
 	    	$("#com-form").submit();
+	    });
+	    
+	    $("#com-form input[type='text']").tooltipster({ 
+	    	trigger : 'custom', 
+	    	onlyOne : false, 
+	    	position : 'right' 
+	    });
+		 
+		 $("#com-form").validate({
+	    	rules : {
+	    		searchVend : {
+	    			required : true
+	    		},
+	    		fechaInicio : {
+	    			required : true
+	    		},
+	    		fechaInicio : {
+	    			required : true
+	    		}
+	    	},
+	    	 errorPlacement: function (error, element) {
+	             $(element).tooltipster('update', $(error).text());
+	             $(element).tooltipster('show');
+	         },
+	         success: function (label, element) {
+	             $(element).tooltipster('hide');
+	         }
 	    });
 	});
 </script>
@@ -94,6 +122,7 @@
 				<input type="hidden" value="<%= SISINVConstants.TASKS.TASK_BUSCAR %>" id="task" name="task">
 				<input type="hidden" value="<%= SISINVConstants.REPORT_TYPES.COMISIONES %>" id="tipo" name="tipo">
 				<input type="hidden" value="${idVendedor}" id="idVendedor" name="idVendedor">
+				<input type="hidden" value="" id="comision-pedido" name="comision-pedido">
 					<div class="row">
 	                	<div class="col-lg-12">
 	             		 	<div  class="form-group">
@@ -105,13 +134,13 @@
 						<div class="col-lg-4">
                         	<div class="form-group">
                                 <label>Fecha inicio</label>
-                                <input class="form-control" name="fechaInicio" id="fechaInicio" value="${fechaInicio}">
+                                <input type="text" class="form-control" name="fechaInicio" id="fechaInicio" value="${fechaInicio}">
                             </div>
                         </div>
                         <div class="col-lg-4">
                         	<div class="form-group">
                                 <label>Fecha final</label>
-                                <input class="form-control" name="fechaFinal" id="fechaFinal" value="${fechaInicio}">
+                                <input type="text" class="form-control" name="fechaFinal" id="fechaFinal" value="${fechaInicio}">
                             </div>
                         </div>
 					</div>
@@ -127,22 +156,24 @@
 					 		</div>
 					 		<div class="panel-body">
 					 			<div class="table-responsive">
-					 				 <table class="table table-bordered table-hover table-striped">
+					 				 <table class="table table-bordered table-hover table-striped" id="list-pedidos">
                                        <thead>
                                            <tr>
                                                <th># Pedido</th>
                                                <th>Fecha</th>
                                                <th>Cliente</th>
                                                <th>Total</th>
+                                               <th>Pagado</th>
                                            </tr>
                                        </thead>
                                        <tbody>
                                        		 <c:forEach items="${pedidos}" var="item">
-											    <tr>
-											      <td><c:out value="${item.id}" /></td>
+											    <tr id="${item.id}" <c:if test="${not empty item.fechaPagoComision}">class="selected"</c:if>>
+											      <td id="t-id"><c:out value="${item.id}" /></td>
 											      <td><fmt:formatDate pattern="dd/MM/yyyy" value="${item.fecha}" /></td>
 											      <td><c:out value="${item.nombre}" /></td>
 											      <td><c:out value="${item.total}" /></td>
+											      <td><c:if test="${not empty item.fechaPagoComision}"><i class="fa fa-check fa-fw"></i></c:if></td>
 											    </tr>
 											  </c:forEach>
                                        </tbody>
@@ -151,6 +182,7 @@
 					 		</div>
 					 	</div>
 					 </div>
+					 <c:if test="${fn:length(pedidos) gt 0}">
 					 <div class="row">
                     	<div class="col-lg-24">
                     		<div  class="alert alert-success">
@@ -159,6 +191,7 @@
                     	</div>
                     </div>
                     <button id="pagar-comision" type="submit" class="btn btn-primary" >Pagar</button>
+                    </c:if>
 			</div>
 		</div>
 	</div>
