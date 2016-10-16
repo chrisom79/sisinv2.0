@@ -17,6 +17,8 @@
 <link href="css/jquery-ui.css" rel="stylesheet">
 <link href="css/jquery-ui.css" rel="stylesheet">
 <link href="css/tooltipster.css" rel="stylesheet">
+<link href="css/dataTables.bootstrap4.css" rel="stylesheet">
+
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
@@ -38,3 +40,5 @@
 <script src="js/jquery.validate.min.js"></script>
 <script src="js/utils.js"></script>
 <script src="js/jquery.noty.packaged.js"></script>
+<script src="js/jquery.dataTables.min.js"></script>
+<script src="js/dataTables.bootstrap4.js"></script>

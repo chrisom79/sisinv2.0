@@ -3,8 +3,10 @@ package com.chrisom.actions;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,9 +14,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.chrisom.sisinv.entity.ItemPedido;
 import com.chrisom.sisinv.entity.NotaRemision;
+import com.chrisom.sisinv.entity.NotaRemisionDetalle;
+import com.chrisom.sisinv.entity.Producto;
 import com.chrisom.sisinv.entity.Vendedor;
 import com.chrisom.sisinv.model.PedidoModel;
+import com.chrisom.sisinv.model.ProductoModel;
 import com.chrisom.sisinv.model.VendedorModel;
 import com.chrisom.sisinv.utils.ProductoUtils;
 import com.chrisom.sisinv.utils.SISINVConstants;
@@ -80,11 +86,12 @@ public class ReporteAction extends HttpServlet {
 				}
 				List<NotaRemision> pedidos = model.findPedidosByVendedor(idVend, fi, ff);
 				Vendedor vendedor = vModel.findVendedorById(idVend);
-				if(vendedor.getComision() != null) {
-					Double sum = (pedidos.stream().mapToDouble(item -> (item.getFechaPagoComision()==null?item.getTotal():0.0)).sum()) * (vendedor.getComision() / 100.0);
+				List<ItemPedido> items = convertToItems(pedidos);
+				if(items != null && !items.isEmpty()) {
+					Double sum = (items.stream().mapToDouble(item -> (item.getPagoComision() == null && item.getComision() != null?item.getImporte() * ((double)item.getComision() / 100) :0.0)).sum()) ;
 					request.setAttribute("comision", ProductoUtils.round(sum, 2));
 				}
-				request.setAttribute("pedidos", pedidos);
+				request.setAttribute("items", items);
 				request.setAttribute("idVendedor", idVend);
 				request.setAttribute("fechaInicio", fechaInicio);
 				request.setAttribute("fechaFinal", fechaFinal);
@@ -106,6 +113,22 @@ public class ReporteAction extends HttpServlet {
 			request.getRequestDispatcher("/home.jsp").forward(request, response);
 			
 		}
+	}
+	
+	private List<ItemPedido> convertToItems(List<NotaRemision> pedidos) {
+		ProductoModel model = new ProductoModel();
+		List<ItemPedido> items = new ArrayList<ItemPedido>();
+		for(NotaRemision pedido : pedidos) {
+			for(NotaRemisionDetalle nrd : pedido.getNotaRemisionDetalles()) {
+				Producto prod = model.findProductoByCode(nrd.getProductoId());
+				ItemPedido item = new ItemPedido(nrd.getCantidad(), nrd.getProductoId(), prod.getNombre(),
+						nrd.getPrecio(), nrd.getPrecio() * nrd.getCantidad(), pedido.getId(), prod.getComision());
+				item.setPagoComision(nrd.getFechaPagoComision());
+				items.add(item);
+			}
+			
+		}
+		return items;
 	}
 
 }

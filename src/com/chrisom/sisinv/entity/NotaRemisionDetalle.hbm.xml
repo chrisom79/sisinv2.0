@@ -3,7 +3,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated 27-oct-2015 22:28:42 by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-    <class name="com.chrisom.sisinv.entity.NotaRemisionDetalle" table="nota_remision_detalle" catalog="dbsisinv">
+    <class name="com.chrisom.sisinv.entity.NotaRemisionDetalle" table="nota_remision_detalle" catalog="chrisomj_dbsisinv">
         <id name="id" type="int">
             <column name="nrdetalle_id" />
             <generator class="increment" />
@@ -14,11 +14,20 @@
         <property name="precio" type="double">
             <column name="precio" precision="22" scale="0" not-null="true" />
         </property>
+        <property name="precioFinal" type="double">
+            <column name="precio_final" precision="22" scale="0" not-null="true" />
+        </property>
+         <property name="importe" type="double">
+            <column name="importe" precision="22" scale="0" not-null="true" />
+        </property>
         <property name="productoId" type="string">
             <column name="producto_id" length="30" not-null="true" />
         </property>
         <property name="cargado" type="java.lang.Boolean">
             <column name="cargado" default="0" />
+        </property>
+        <property name="fechaPagoComision" type="timestamp">
+            <column name="fecha_pago_comision" length="19" />
         </property>
          <many-to-one name="notaRemision" class="com.chrisom.sisinv.entity.NotaRemision" fetch="select" >
         	<column name="notaremision_id" not-null="true"></column>

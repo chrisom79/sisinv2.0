@@ -57,6 +57,60 @@
 			
 			return list;
 		}
+		
+		function eliminar(idPedido, idProducto){
+			noty({
+	            text        : '¿Deseas borrar el producto?',
+	            type        : 'information',
+	            dismissQueue: true,
+	            layout      : 'center',
+	            theme       : 'defaultTheme',
+	            modal		: true,
+	            buttons     : [
+	            {
+	              	addClass: 'btn btn-primary', text: 'Si', 
+	               	onClick: function ($noty) {
+	               		$.ajax({
+	    					url:"PedidoAction",
+	    					type:"GET",
+	    					data:{
+	    						idPedido : idPedido,
+	    						idProducto : idProducto,
+	    						task : "<%= SISINVConstants.PEDIDO_TASKS.BORRAR_PRODUCTO %>"
+	    					},
+	    					dataType: "json",
+	    					success : function (data) {
+	    						$("#" + data).remove();
+	    					}
+	    				});
+	                	$noty.close();
+	               	}
+	            },
+	            {
+	            	addClass: 'btn btn-info', text: 'No', onClick: function ($noty) {
+	               		$noty.close();
+	                }
+	             }]
+	        });
+			  
+		}
+		
+		function cambiar(idPedido, idProducto){
+			$.ajax({
+					url:"PedidoAction",
+					type:"GET",
+					data:{
+						idPedido : idPedido,
+						idProducto : idProducto,
+						cantidad : $("#txt"+ idProducto).val(),
+						task : "<%= SISINVConstants.PEDIDO_TASKS.CAMBIAR_PRODUCTO %>"
+					},
+					dataType: "json",
+					success : function (data) {
+						
+					}
+				});
+		}
 	</script>
 </head>
 <body>
@@ -70,7 +124,12 @@
 	                    <div class="col-lg-24">
 	                        <ol class="breadcrumb">
 	                            <li class="active">
+	                            	<c:if test="${task eq 'cargar'}">
 	                                <i class="fa fa-arrow-circle-o-up"></i>  Cargar pedido
+	                                </c:if>
+	                                <c:if test="${task eq 'mostrar_pedido'}">
+	                                <i class="fa fa-file-text-o"></i>  Mostrar pedido
+	                                </c:if>
 	                            </li>
 	                        </ol>
 	                    </div>
@@ -146,19 +205,36 @@
                                            <tr>
                                                <th>Cantidad</th>
                                                <th>Articulo</th>
+                                               <c:if test="${task eq 'cargar'}">
                                                <th>Cargado</th>
+                                               <th>Eliminar</th>
+                                               </c:if>
                                            </tr>
                                        </thead>
                                        <tbody>
                                        		 <c:forEach items="${items}" var="item">
                                        		 	<tr id="${item.id}" <c:if test="${item.cargado}">class="selected"</c:if>>
-                                       		 		 <td><c:out value="${item.cantidad}" /></td>
+<%--                                        		 		 <td><c:out value="${item.cantidad}" /></td> --%>
+													
+													<td>
+														<c:if test="${task eq 'cargar'}">
+														<div class="col-lg-12">
+															<input class="form-control" id="txt${item.id}" name="txt${item.id}" value="${item.cantidad}" onchange='cambiar("${pedido.id}", "${item.id}")'>
+														</div>
+														</c:if>
+														<c:if test="${task eq 'mostrar_pedido'}">
+														<c:out value="${item.cantidad}" />
+														</c:if>
+                            						</td>
                                        		 		 <td><c:out value="${item.articulo}" /></td>
+                                       		 		 <c:if test="${task eq 'cargar'}">
                                        		 		 <td>
                                        		 		 	<label>
                                         					<input type="checkbox" value="" <c:if test="${item.cargado}">checked disabled</c:if>>
                                     					</label>
                                     				</td>
+                                    				<td><button class='btn btn-info fa fa-trash' type='button' onclick='eliminar("${pedido.id}", "${item.id}")'></button></td>
+                                    				</c:if>
                                        		 	</tr>
                                        		 </c:forEach>
                                        </tbody>
@@ -197,7 +273,9 @@
 			    			</div>
 			    		</div>
 			    	</div>
+			    	<c:if test="${task eq 'cargar'}">
 		         	<button id="cargar-pedido" type="button" class="btn btn-primary" >Cargar</button>
+		         	</c:if>
 		         </form>
 	          </div>
 			</div>

@@ -3,13 +3,16 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated 27-oct-2015 22:28:42 by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-    <class name="com.chrisom.sisinv.entity.NotaRemision" table="nota_remision" catalog="dbsisinv">
+    <class name="com.chrisom.sisinv.entity.NotaRemision" table="nota_remision" catalog="chrisomj_dbsisinv">
         <id name="id" type="int">
             <column name="notaremision_id" />
             <generator class="assigned" />
         </id>
         <many-to-one name="vendedor" class="com.chrisom.sisinv.entity.Vendedor" fetch="select">
             <column name="vendedor_id" length="7" not-null="true" />
+        </many-to-one>
+        <many-to-one name="ruta" class="com.chrisom.sisinv.entity.PedidoRuta" fetch="select" lazy="false">
+            <column name="pedido_ruta_id" length="7" />
         </many-to-one>
         <property name="fecha" type="timestamp">
             <column name="fecha" length="19" not-null="true" />
@@ -26,9 +29,10 @@
         <property name="ciudad" type="string">
             <column name="ciudad" length="45" />
         </property>
-        <property name="fechaPagoComision" type="timestamp">
-            <column name="fecha_pago_comision" length="19" />
+        <property name="enviado" type="java.lang.Boolean">
+            <column name="enviado" />
         </property>
+        
         <set name="notaRemisionDetalles" table="nota_remision_detalle" inverse="true" lazy="true" fetch="select" cascade="all">
             <key>
                 <column name="notaremision_id" not-null="true" />

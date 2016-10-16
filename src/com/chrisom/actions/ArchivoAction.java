@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -25,18 +23,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.chrisom.sisinv.entity.Producto;
 import com.chrisom.sisinv.model.ProductoModel;
 import com.chrisom.sisinv.utils.POIUtils;
+import com.chrisom.sisinv.utils.ProductoUtils;
 import com.chrisom.sisinv.utils.SISINVConstants;
 
 
@@ -47,9 +43,7 @@ import com.chrisom.sisinv.utils.SISINVConstants;
 @MultipartConfig
 public class ArchivoAction extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static final String SAVE_DIR = "tmp";
-       
-    /**
+	/**
      * @see HttpServlet#HttpServlet()
      */
     public ArchivoAction() {
@@ -69,7 +63,6 @@ public class ArchivoAction extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String appPath = request.getServletContext().getRealPath("");
         String task = request.getParameter("task");
         
 		if(SISINVConstants.TASKS.TASK_IMPORTAR.equalsIgnoreCase(task)) {
@@ -102,12 +95,13 @@ public class ArchivoAction extends HttpServlet {
 		}
 	}
 	
+	@SuppressWarnings("resource")
 	private List<Producto> readXLSFile(Part filePart) throws IOException {
 		List<Producto> prods = new ArrayList<Producto>();
-		ProductoModel prodModel = new ProductoModel();
-		Integer id = prodModel.getMaxIdToInsert();
-		id = (id != null? id + 1 : 0);
+		/*Integer id = prodModel.getMaxIdToInsert();
+		id = (id != null? id + 1 : 0);*/
 		InputStream file = filePart.getInputStream();
+		
 		XSSFWorkbook workbook = new XSSFWorkbook(file);
 		XSSFSheet sheet = workbook.getSheetAt(0);
 		Iterator<Row> rowIterator = sheet.iterator();
@@ -118,31 +112,36 @@ public class ArchivoAction extends HttpServlet {
 	        //For each row, iterate through each columns
 	        Iterator<Cell> cellIterator = row.cellIterator();
 	        
-	        String nombre = (String) getValueFromCell(cellIterator.next());
-	        Double precio = (Double) getValueFromCell(cellIterator.next());
-	        Integer ganancia = ((Double)getValueFromCell(cellIterator.next())).intValue();
-	        Boolean iva = ((String) getValueFromCell(cellIterator.next())).equalsIgnoreCase("Si") ? Boolean.TRUE : Boolean.FALSE;
-	        System.out.println("id: " + id);
-	        System.out.println("nombre: " + nombre);
-	        System.out.println("precio: " + precio);
-	        System.out.println("ganancia: " + ganancia);
-	        System.out.println("iva: " + iva);
-	        
-	        prod.setId(id.toString());
-	        prod.setNombre(nombre);
-	        prod.setPrecioCompra(precio);
-	        prod.setPorcentaje(ganancia);
-	        prod.setIva(iva);
-	        prods.add(prod);
-	        
-	        id++;
+	        Double id = (Double) getValueFromCell(cellIterator.next());
+	        if(id != null) {
+		        String nombre = (String) getValueFromCell(cellIterator.next());
+		        Double piezas = (Double) getValueFromCell(cellIterator.next());
+		        Double precio = (Double) getValueFromCell(cellIterator.next());
+		        Boolean iva = ((String) getValueFromCell(cellIterator.next())).equalsIgnoreCase("Si") ? Boolean.TRUE : Boolean.FALSE;
+		        Integer ganancia = (int) (((Double)getValueFromCell(cellIterator.next())) * 100);
+		        
+		        System.out.println("id: " + id);
+		        System.out.println("nombre: " + nombre);
+		        System.out.println("piezas: " + piezas);
+		        System.out.println("precio: " + precio);
+		        System.out.println("ganancia: " + ganancia);
+		        System.out.println("iva: " + iva);
+		        
+		        prod.setId(String.valueOf((int)id.doubleValue()));
+		        prod.setNombre(nombre);
+		        prod.setPiezas(piezas.intValue());
+		        prod.setPrecioCompra(ProductoUtils.round(precio, 2));
+		        prod.setPorcentaje(ganancia);
+		        prod.setIva(iva);
+		        prod.setComision(0);
+		        prods.add(prod);
+	        }
 	    }
 	    file.close();
 	    return prods;
 	}
 	
 	private String writeXLSFile(String nombre) {
-		String outFile = null;
 		File f = null;
 		nombre = nombre + "_temp.xlsx";
 		XSSFWorkbook workbook = new XSSFWorkbook();
@@ -230,7 +229,10 @@ public class ArchivoAction extends HttpServlet {
 		try {
 			ProductoModel prodModel = new ProductoModel();
 			for(Producto prod : prods) {
-				prodModel.insertProducto(prod);
+				if(prodModel.findProductoByCode(prod.getId()) == null)
+					prodModel.insertProducto(prod);
+				else
+					prodModel.updateProducto(prod);
 			}
 		} catch(Exception e) {
 			return Boolean.FALSE;

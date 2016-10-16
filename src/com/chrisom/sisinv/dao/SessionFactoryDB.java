@@ -33,6 +33,6 @@ public class SessionFactoryDB {
     } 
     
     public static void shutdown() {
-        getSessionFactory().close();
+    	getSessionFactory().close();
     }
 }

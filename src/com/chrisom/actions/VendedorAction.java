@@ -61,7 +61,6 @@ public class VendedorAction extends HttpServlet {
 			String email = request.getParameter("txtEmail");
 			String telefono = request.getParameter("txtTelefono");
 			String usuario = request.getParameter("txtUsuario");
-			String comision = request.getParameter("txtComision");
 			
 			if(!model.existsUsername(usuario)) {
 				String defPass = Algorithms.encryptMD5("password");
@@ -70,7 +69,6 @@ public class VendedorAction extends HttpServlet {
 				Vendedor vendedor = new Vendedor(id, nombre, telefono, usuario, defPass);
 				vendedor.setDireccion(direccion);
 				vendedor.setEmail(email);
-				vendedor.setComision(Integer.valueOf(comision));
 				vendedor.setHabilitado(Boolean.TRUE);
 				model.insertVendedor(vendedor);
 				
@@ -87,7 +85,7 @@ public class VendedorAction extends HttpServlet {
 			List<Vendedor> vends = model.findVendedoresByParameters(texto);
 			request.setAttribute("vends", vends);
 			request.getRequestDispatcher("/buscar-vend.jsp").forward(request, response);
-		} else if(SISINVConstants.VEND_TASKS.GET_VEND.equalsIgnoreCase(task)) {
+		} else if(SISINVConstants.TASKS.GET_ITEM.equalsIgnoreCase(task)) {
 			String id = request.getParameter("vendId");
 			Vendedor vend = model.findVendedorById(id);
 			request.setAttribute("vend", vend);
@@ -99,7 +97,6 @@ public class VendedorAction extends HttpServlet {
 			String email = request.getParameter("txtEmail");
 			String telefono = request.getParameter("txtTelefono");
 			String usuario = request.getParameter("txtUsuario");
-			String comision = request.getParameter("txtComision");
 			
 			Vendedor vendedor = new Vendedor();
 			vendedor.setId(id);
@@ -108,7 +105,6 @@ public class VendedorAction extends HttpServlet {
 			vendedor.setUsuario(usuario);
 			vendedor.setDireccion(direccion);
 			vendedor.setEmail(email);
-			vendedor.setComision(Integer.valueOf(comision));
 			vendedor.setHabilitado(Boolean.TRUE);
 			try {
 				model.updateVendedor(vendedor);

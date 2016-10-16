@@ -20,7 +20,8 @@ public class ProductoDAO implements DAOInterface<Producto> {
 			session.getTransaction().commit();
 		} catch (Exception ex) {
 			session.getTransaction().rollback();
-		}
+		} 
+		
 		return id;
 	}
 
@@ -34,9 +35,7 @@ public class ProductoDAO implements DAOInterface<Producto> {
 			session.getTransaction().commit();
 		} catch (Exception ex) {
 			session.getTransaction().rollback();
-		} finally {
-			//SessionFactoryDB.shutdown();
-		}
+		} 
 		
 	}
 
@@ -104,10 +103,11 @@ public class ProductoDAO implements DAOInterface<Producto> {
 	public List<Producto> findProductoByParameters(String id) {
 		List<Producto> productos = new ArrayList<Producto>();
 		Session session = SessionFactoryDB.getSessionFactory().openSession();
-		StringBuffer querySb = new StringBuffer("from Producto where habilitado = 1 ");
+		StringBuffer querySb = new StringBuffer("FROM Producto prod "); //RIGHT JOIN Oferta ofer ON prod.oferta.id = ofer.id ");
+		querySb.append("where prod.habilitado = 1 ");
 		
 		if(id != null && !id.isEmpty()) {
-			querySb.append("and (id like '%" + id + "%' or nombre like '%" + id + "%')");
+			querySb.append("and (prod.id like '%" + id + "%' or prod.nombre like '%" + id + "%')");
 		}
 		
 		Query query = session.createQuery(querySb.toString());
@@ -123,6 +123,21 @@ public class ProductoDAO implements DAOInterface<Producto> {
 		query.setMaxResults(1);
 		id = (String) query.uniqueResult();
 		return Integer.valueOf(id);
+	}
+	
+	public void setOferta(String id, Integer idOferta) {
+		Session session = SessionFactoryDB.getSessionFactory().openSession();
+		try {
+			session.beginTransaction();
+			Query query = session.createQuery("UPDATE Producto set oferta.id = :idOferta WHERE id = :id");
+			query.setParameter("id", id);
+			query.setParameter("idOferta", idOferta);
+			query.executeUpdate();
+			session.getTransaction().commit();
+		} catch (Exception ex) {
+			System.out.println(ex.getStackTrace().toString());
+			session.getTransaction().rollback();
+		} 
 	}
 
 }

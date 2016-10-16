@@ -1,6 +1,7 @@
 package com.chrisom.sisinv.entity;
 // Generated 09-ago-2015 19:16:00 by Hibernate Tools 3.4.0.CR1
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,13 +17,20 @@ public class Producto implements java.io.Serializable {
 	@Expose
 	private String nombre;
 	@Expose
+	private Integer piezas;
+	@Expose
 	private double precioCompra;
 	@Expose
 	private int porcentaje;
 	@Expose
 	private Boolean iva;
 	@Expose
+	private Integer comision;
+	@Expose
 	private Boolean habilitado;
+	@Expose
+	private Oferta oferta;
+	
 	private Set notaRemisionDetalles = new HashSet(0);
 
 	public Producto() {
@@ -101,6 +109,14 @@ public class Producto implements java.io.Serializable {
 		this.notaRemisionDetalles = notaRemisionDetalles;
 	}
 	
+	public Integer getComision() {
+		return comision;
+	}
+
+	public void setComision(Integer comision) {
+		this.comision = comision;
+	}
+	
 	public Boolean getHabilitado() {
 		return habilitado;
 	}
@@ -109,11 +125,20 @@ public class Producto implements java.io.Serializable {
 		this.habilitado = habilitado;
 	}
 
-	@Override
-	public String toString() {
-		return "[id=" + id + ", nombre=" + nombre + ", precioCompra=" + precioCompra + ", porcentaje="
-				+ porcentaje + ", iva=" + iva + ", habilitado=" +habilitado+"]";
+	public int getPiezas() {
+		return piezas;
 	}
 
+	public void setPiezas(int piezas) {
+		this.piezas = piezas;
+	}
+	
+	public Oferta getOferta() {
+		return oferta;
+	}
+
+	public void setOferta(Oferta oferta) {
+		this.oferta = oferta;
+	}
 	
 }

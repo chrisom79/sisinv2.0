@@ -3,13 +3,16 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated 09-ago-2015 19:16:01 by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-    <class name="com.chrisom.sisinv.entity.Producto" table="producto" catalog="dbsisinv">
+    <class name="com.chrisom.sisinv.entity.Producto" table="producto" catalog="chrisomj_dbsisinv">
         <id name="id" type="string">
             <column name="producto_id" length="30" />
             <generator class="assigned" />
         </id>
         <property name="nombre" type="string">
             <column name="nombre" length="80" not-null="true" />
+        </property>
+        <property name="piezas" type="java.lang.Integer">
+            <column name="piezas" />
         </property>
         <property name="precioCompra" type="double">
             <column name="precio_compra" precision="22" scale="0" not-null="true" />
@@ -20,9 +23,16 @@
         <property name="iva" type="java.lang.Boolean">
             <column name="iva" />
         </property>
+        <property name="comision" type="int">
+            <column name="porc_comision" />
+        </property>
         <property name="habilitado" type="java.lang.Boolean">
             <column name="habilitado" />
         </property>
+        <many-to-one name="oferta" class="com.chrisom.sisinv.entity.Oferta" fetch="join" lazy="false">
+            <column name="oferta_id" length="7" />
+        </many-to-one>
+        
         <set name="notaRemisionDetalles" table="nota_remision_detalle" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="producto_id" length="7" not-null="true" />

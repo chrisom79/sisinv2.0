@@ -51,8 +51,33 @@ public class ProductoAction extends HttpServlet {
 			response.setContentType("application/json");
 			String term = request.getParameter("term");
 			List<Producto> prods = prModel.findProductoByParameters(term);
+			for(Producto prod : prods)
+				if(prod.getOferta() != null && prod.getOferta().getId() != 0)
+					System.out.println(prod.getOferta().getOfertaCompleta());
 			String searchList = gson.toJson(prods);
 			response.getWriter().write(searchList);
+		} else if(SISINVConstants.TASKS.TASK_EDITAR.equalsIgnoreCase(task)) {
+			Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+			String codigo = request.getParameter("txtCodigo");
+			String nombre = request.getParameter("txtNombre");
+			Integer piezas = Integer.valueOf(request.getParameter("txtPiezas"));
+			Double precio = Double.valueOf(request.getParameter("txtPrecioComp"));
+			Integer ganancia = Integer.valueOf(request.getParameter("txtGanancia"));
+			Boolean iva = Boolean.valueOf(request.getParameter("txtIVA"));
+			String oldCodigo = request.getParameter("prevId");
+			String comision = request.getParameter("txtComision");
+			
+			Producto producto = new Producto(codigo, nombre, precio, ganancia, iva);
+			producto.setPiezas(piezas);
+			if(comision != null)
+				producto.setComision(Integer.valueOf(comision));
+			
+			if(!codigo.equals(oldCodigo)) {
+				prModel.deleteById(oldCodigo);
+			}
+			prModel.updateProducto(producto);
+			String prod = gson.toJson(producto);
+			response.getWriter().write(prod);
 		}
 	}
 
@@ -67,23 +92,33 @@ public class ProductoAction extends HttpServlet {
 		if(SISINVConstants.TASKS.TASK_BUSCAR.equalsIgnoreCase(task)) {
 			String texto = request.getParameter("txtBuscar");
 			List<Producto> prods = model.findProductoByParameters(texto);
+			
+			for(Producto prod : prods) {
+				if(prod.getOferta() != null && prod.getOferta().getId() != 0)
+					System.out.println(prod.getOferta().getOfertaCompleta());
+			}
 			request.setAttribute("productos", prods);
 			request.setAttribute("txtBuscar", texto);
 			request.getRequestDispatcher("/buscar-prods.jsp").forward(request, response);
 		} else if(SISINVConstants.TASKS.TASK_CREAR.equalsIgnoreCase(task)) {
 			String codigo = request.getParameter("txtCodigo");
 			String nombre = request.getParameter("txtNombre");
+			Integer piezas = Integer.valueOf(request.getParameter("txtPiezas"));
 			Double precio = Double.valueOf(request.getParameter("txtPrecioComp"));
 			Integer ganancia = Integer.valueOf(request.getParameter("txtGanancia"));
 			Boolean iva = Boolean.valueOf(request.getParameter("txtIVA"));
+			String comision = request.getParameter("txtComision");
 			
 			Producto producto = new Producto(codigo, nombre, precio, ganancia, iva);
+			producto.setPiezas(piezas);
+			producto.setComision(Integer.valueOf(comision));
+			
 			String id = model.insertProducto(producto);
 			if(id != null) {
 				request.setAttribute("mensaje", "El producto ha sido guardado");
 			}
 			request.getRequestDispatcher("/home.jsp").forward(request, response);
-		} else if(SISINVConstants.PROD_TASKS.GET_PROD.equalsIgnoreCase(task)) {
+		} else if(SISINVConstants.TASKS.GET_ITEM.equalsIgnoreCase(task)) {
 			String productoId = request.getParameter("productoId");
 			Producto prod = model.findProductoByCode(productoId);
 			request.setAttribute("prod", prod);
@@ -91,11 +126,18 @@ public class ProductoAction extends HttpServlet {
 		}  else if(SISINVConstants.TASKS.TASK_EDITAR.equalsIgnoreCase(task)) {
 			String codigo = request.getParameter("txtCodigo");
 			String nombre = request.getParameter("txtNombre");
+			Integer piezas = Integer.valueOf(request.getParameter("txtPiezas"));
 			Double precio = Double.valueOf(request.getParameter("txtPrecioComp"));
 			Integer ganancia = Integer.valueOf(request.getParameter("txtGanancia"));
 			Boolean iva = Boolean.valueOf(request.getParameter("txtIVA"));
 			String oldCodigo = request.getParameter("prevId");
+			String comision = request.getParameter("txtComision");
+			
 			Producto producto = new Producto(codigo, nombre, precio, ganancia, iva);
+			producto.setPiezas(piezas);
+			if(comision != null)
+				producto.setComision(Integer.valueOf(comision));
+			
 			if(!codigo.equals(oldCodigo)) {
 				model.deleteById(oldCodigo);
 			}

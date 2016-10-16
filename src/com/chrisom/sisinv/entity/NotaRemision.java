@@ -20,9 +20,14 @@ public class NotaRemision implements java.io.Serializable {
 	private double total;
 	@Expose
 	private String nombre;
+	@Expose
 	private String direccion;
 	private String ciudad;
-	private Date fechaPagoComision;
+	@Expose
+	private Boolean enviado;
+	@Expose
+	private PedidoRuta ruta;
+	
 	private Set<NotaRemisionDetalle> notaRemisionDetalles = new HashSet<NotaRemisionDetalle>(0);
 
 	public NotaRemision() {
@@ -35,6 +40,7 @@ public class NotaRemision implements java.io.Serializable {
 		this.total = total;
 	}
 
+	@SuppressWarnings("unchecked")
 	public NotaRemision(int id, Vendedor vendedor, Date fecha, double total, String nombre, String direccion,
 			String ciudad, Set notaRemisionDetalles) {
 		this.id = id;
@@ -111,12 +117,20 @@ public class NotaRemision implements java.io.Serializable {
 		this.notaRemisionDetalles = notaRemisionDetalles;
 	}
 
-	public Date getFechaPagoComision() {
-		return fechaPagoComision;
+	public PedidoRuta getRuta() {
+		return ruta;
 	}
 
-	public void setFechaPagoComision(Date fechaPagoComision) {
-		this.fechaPagoComision = fechaPagoComision;
+	public void setRuta(PedidoRuta ruta) {
+		this.ruta = ruta;
+	}
+
+	public Boolean isEnviado() {
+		return enviado;
+	}
+
+	public void setEnviado(Boolean enviado) {
+		this.enviado = enviado;
 	}
 	
 	

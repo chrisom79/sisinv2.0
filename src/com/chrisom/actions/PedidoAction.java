@@ -1,6 +1,9 @@
 package com.chrisom.actions;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -53,14 +57,20 @@ public class PedidoAction extends HttpServlet {
 			List<NotaRemision> pedidos = model.findLastPedidos(5);
 			String searchList = gson.toJson(pedidos);
 			response.getWriter().write(searchList);
-		} else if(SISINVConstants.TASKS.TASK_IMPRIMIR.equalsIgnoreCase(task)) {
-			String id = request.getParameter("id");
-			ReportGenerator rg = new ReportGenerator();
+		} else if(SISINVConstants.PEDIDO_TASKS.BORRAR_PRODUCTO.equalsIgnoreCase(task)) {
+			String idPedido = request.getParameter("idPedido");
+			String idProducto = request.getParameter("idProducto");
+			Boolean success = model.removeProducto(Integer.valueOf(idPedido), idProducto);
 			
-			NotaRemision nr = model.findPedidoById(Integer.valueOf(id));
-			rg.callingPedido(nr);
-			response.setContentType("text/text");
-			response.getWriter().write("success");
+			if(!success)
+				idProducto = "";
+			response.getWriter().write(idProducto);
+		} else if(SISINVConstants.PEDIDO_TASKS.CAMBIAR_PRODUCTO.equalsIgnoreCase(task)) {
+			String idPedido = request.getParameter("idPedido");
+			String idProducto = request.getParameter("idProducto");
+			String cantidad = request.getParameter("cantidad");
+			
+			model.updateCantidad(Integer.valueOf(idPedido), idProducto, Integer.valueOf(cantidad));
 		}
 	}
 
@@ -100,12 +110,25 @@ public class PedidoAction extends HttpServlet {
 			try {
 				nr = createObject(request);
 				String id = model.insertPedido(nr);
-				rg.callingPedido(nr);
+				String nameFile = rg.callingPedido(nr);
+				
+				response.setContentType("application/pdf");
+		        response.setHeader("Content-Disposition", "attachment; filename="+nameFile);
+				InputStream is = new FileInputStream(nameFile);
+				
+				int read=0;
+				byte[] bytes = new byte[2048];
+				OutputStream os = response.getOutputStream();
+		        
+		        while((read = is.read(bytes))!= -1){
+					os.write(bytes, 0, read);
+				}
+				is.close();
+				os.flush();
+				os.close();		
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
-			
-			request.getRequestDispatcher("/home.jsp").forward(request, response);
 		} else if(SISINVConstants.TASKS.TASK_BUSCAR.equalsIgnoreCase(task)) {
 			
 			try {
@@ -125,7 +148,7 @@ public class PedidoAction extends HttpServlet {
 				e.printStackTrace();
 			}
 			
-			List<NotaRemision> pedidos = model.findPedidosByParameters(nombre, fi, ff);
+			List<NotaRemision> pedidos = model.findPedidosByParameters(nombre, fi, ff, null);
 			//request.setCharacterEncoding("UTF-8");
 			request.setAttribute("pedidos", pedidos);
 			request.setAttribute("nombre", nombre);
@@ -134,20 +157,10 @@ public class PedidoAction extends HttpServlet {
 			request.getRequestDispatcher("/buscar-pedido.jsp").forward(request, response);
 		} else if(SISINVConstants.PEDIDO_TASKS.LOAD_PEDIDO.equalsIgnoreCase(task)) {
 			String id = request.getParameter("pedidoId");
-			String fecha = null;
-			sdf = new SimpleDateFormat("dd/MM/yyyy");
-			
-			NotaRemision pedido = model.findPedidoById(Integer.valueOf(id));
-			List<ItemPedido> items = model.findItemsByPedido(Integer.valueOf(id));
-			if(pedido.getFecha() != null) {
-				fecha = sdf.format(pedido.getFecha());
-			}
-			
-			request.setAttribute("fecha", fecha);
-			request.setAttribute("pedido", pedido);
-			request.setAttribute("items", items);
-			
-			request.getRequestDispatcher("/cargar-pedido.jsp").forward(request, response);
+			searchPedidosById(id, task, model, request, response);
+		}  else if(SISINVConstants.PEDIDO_TASKS.MOSTRAR_PEDIDO.equalsIgnoreCase(task)) {
+			String id = request.getParameter("pedidoId");
+			searchPedidosById(id, task, model, request, response);
 		}  else if(SISINVConstants.PEDIDO_TASKS.LOAD_PRODS.equalsIgnoreCase(task)) {
 			loadProdsToPedido(request);
 			
@@ -157,11 +170,46 @@ public class PedidoAction extends HttpServlet {
 			ReportGenerator rg = new ReportGenerator();
 			NotaRemision nr = model.findPedidoById(Integer.valueOf(id));
 			
-			rg.callingPedido(nr);
+			String nameFile = rg.callingPedido(nr);
+			
+			response.setContentType("application/pdf");
+	        response.setHeader("Content-Disposition", "attachment; filename="+nameFile);
+			InputStream fis = new FileInputStream(nameFile);
+			ServletOutputStream os       = response.getOutputStream();
+			byte[] bufferData = new byte[1024];
+	        int read=0;
+	        while((read = fis.read(bufferData))!= -1){
+	            os.write(bufferData, 0, read);
+	        }
+	        os.flush();
+	        os.close();
+	        fis.close();
 			loadProdsToPedido(request);
 			
 			request.getRequestDispatcher("/buscar-pedido.jsp").forward(request, response);
-		}
+		} else if(SISINVConstants.TASKS.TASK_IMPRIMIR_FROMSEARCH.equalsIgnoreCase(task)) {
+			String id = request.getParameter("pedidoId");
+			ReportGenerator rg = new ReportGenerator();
+			
+			NotaRemision nr = model.findPedidoById(Integer.valueOf(id));
+			String nameFile = rg.callingPedido(nr);
+			
+			response.setContentType("application/pdf");
+	        response.setHeader("Content-Disposition", "attachment; filename="+nameFile);
+			InputStream fis = new FileInputStream(nameFile);
+			ServletOutputStream os       = response.getOutputStream();
+			byte[] bufferData = new byte[1024];
+	        int read=0;
+	        while((read = fis.read(bufferData))!= -1){
+	            os.write(bufferData, 0, read);
+	        }
+	        os.flush();
+	        os.close();
+	        fis.close();
+			
+		} if(SISINVConstants.TASKS.TASK_CERRAR.equalsIgnoreCase(task)) {
+			request.getRequestDispatcher("/home.jsp").forward(request, response);
+		} 
 	}
 	
 	private NotaRemision createObject(HttpServletRequest request) throws ParseException {
@@ -205,6 +253,8 @@ public class PedidoAction extends HttpServlet {
 			String[] elements = prod.split(",");
 			Integer convCantidad = null;
 			Double convPrecio = null;
+			Double convPrecioFinal = null;
+			Double importe = null;
 			
 			if(elements[0] != null && !elements[0].isEmpty()) {
 				convCantidad = Integer.valueOf(elements[0]);
@@ -214,7 +264,17 @@ public class PedidoAction extends HttpServlet {
 				convPrecio = Double.valueOf(elements[1]);
 			}
 			
-			NotaRemisionDetalle nrd = new NotaRemisionDetalle(convCantidad, convPrecio, elements[2]);
+			if(elements[2] != null && !elements[2].isEmpty()) {
+				convPrecioFinal = Double.valueOf(elements[2]);
+			}
+			
+			if(elements[3] != null && !elements[3].isEmpty()) {
+				importe = Double.valueOf(elements[3]);
+			}
+			
+			NotaRemisionDetalle nrd = new NotaRemisionDetalle(convCantidad, convPrecio, elements[4]);
+			nrd.setPrecioFinal(convPrecioFinal);
+			nrd.setImporte(importe);
 			nrd.setCargado(Boolean.FALSE);
 			nrd.setNotaRemision(nr);
 			nr.getNotaRemisionDetalles().add(nrd);
@@ -234,6 +294,26 @@ public class PedidoAction extends HttpServlet {
 		List<String> prodToLoad = Arrays.asList(prods.split(","));
 		
 		model.loadProductosToPedido(prodToLoad, nr);
+	}
+	
+	private void searchPedidosById(String id, String task, PedidoModel model, HttpServletRequest request, HttpServletResponse response) 
+			throws ServletException, IOException {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		String fecha = null;
+		sdf = new SimpleDateFormat("dd/MM/yyyy");
+		
+		NotaRemision pedido = model.findPedidoById(Integer.valueOf(id));
+		List<ItemPedido> items = model.findItemsByPedido(Integer.valueOf(id));
+		if(pedido.getFecha() != null) {
+			fecha = sdf.format(pedido.getFecha());
+		}
+		
+		request.setAttribute("fecha", fecha);
+		request.setAttribute("pedido", pedido);
+		request.setAttribute("items", items);
+		request.setAttribute("task", task);
+		
+		request.getRequestDispatcher("/cargar-pedido.jsp").forward(request, response);
 	}
 
 }

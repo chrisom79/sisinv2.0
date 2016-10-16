@@ -7,8 +7,12 @@
 <head>
 	<jsp:include page="header.jsp" />
 	<script type="text/javascript">
+		$(function() {
+			$('#tab_vends').DataTable();
+		});
+		
 		function editVendedor(id){
-			$("#task").val('<%= SISINVConstants.VEND_TASKS.GET_VEND %>');
+			$("#task").val('<%= SISINVConstants.TASKS.GET_ITEM %>');
 			$("#vendId").val(id);
 			$("#buscarForm").submit();
 		}
@@ -81,7 +85,7 @@
                            </div>
                            <div class="panel-body">
                                <div class="table-responsive">
-                                   <table class="table table-bordered table-hover table-striped">
+                                   <table id="tab_vends" class="table table-bordered table-hover table-striped">
                                        <thead>
                                            <tr>
                                                <th>Identificador</th>

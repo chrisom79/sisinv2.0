@@ -2,13 +2,18 @@
     pageEncoding="ISO-8859-1"%>
 <%@ page import="com.chrisom.sisinv.utils.SISINVConstants"%> 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 	<jsp:include page="header.jsp" />
 	<script>
+		$(function() {
+			$('#tab_prods').DataTable();
+			$('[data-toggle="tooltip"]').tooltip();   
+		});
 		function editProducto(id){
-			$("#task").val('<%= SISINVConstants.PROD_TASKS.GET_PROD %>');
+			$("#task").val('<%= SISINVConstants.TASKS.GET_ITEM %>');
 			$("#productoId").val(id);
 			$("#buscarForm").submit();
 		}
@@ -81,14 +86,15 @@
                            </div>
                            <div class="panel-body">
                                <div class="table-responsive">
-                                   <table class="table table-bordered table-hover table-striped">
+                                   <table id="tab_prods" class="table table-bordered table-hover table-striped">
                                        <thead>
                                            <tr>
-                                               <th>Codigo</th>
+                                               <th class="hidden-sm hidden-xs">Codigo</th>
                                                <th>Nombre</th>
-                                               <th>Precio compra</th>
+                                               <th class="hidden-sm hidden-xs">Precio compra</th>
                                                <th>Precio venta</th>
-                                               <th>Iva</th>
+                                               <th class="hidden-sm hidden-xs">Iva</th>
+                                               <th class="hidden-sm hidden-xs">Oferta</th>
                                                <th>Editar</th>
                                                <th>Borrar</th>
                                            </tr>
@@ -96,11 +102,12 @@
                                        <tbody>
                                        		 <c:forEach items="${productos}" var="item">
 											    <tr>
-											      <td><c:out value="${item.id}" /></td>
+											      <td class="hidden-sm hidden-xs" ><c:out value="${item.id}" /></td>
 											      <td><c:out value="${item.nombre}" /></td>
-											      <td><c:out value="${item.precioCompra}" /></td>
-											      <td><c:out value="${(item.precioCompra*(item.porcentaje / 100)) + item.precioCompra}" /></td>
-											      <td><c:if test="${item.iva}"><i class="fa fa-check fa-fw"></i></c:if></td>
+											      <td class="hidden-sm hidden-xs"><c:out value="${item.precioCompra}" /></td>
+											      <td><fmt:formatNumber value="${(item.precioCompra*(item.porcentaje / 100)) + item.precioCompra}" maxFractionDigits="2"/></td>
+											      <td class="hidden-sm hidden-xs"><c:if test="${item.iva}"><i class="fa fa-check fa-fw"></i></c:if></td>
+											      <td class="hidden-sm hidden-xs"><c:if test="${not empty item.oferta and item.oferta.id ne 0}"><a href="#" data-toggle="tooltip" title="${item.oferta.ofertaCompleta}"><i class="fa fa-info-circle fa-fw"></i></a></c:if></td>
 											      <td><button class='btn btn-info fa fa-edit' type='button' onclick='editProducto("${item.id}")'></button></td>
 											      <td><button class='btn btn-info fa fa-trash' type='button' onclick='deleteProducto("${item.id}")'></button></td>
 											    </tr>

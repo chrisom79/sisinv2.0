@@ -60,32 +60,25 @@
 		             $(element).tooltipster('hide');
 		         }
 		    });
+			
+			$('#tab_pedidos').DataTable();
 		  });
 		  
 		  function imprimirPedido(numeroPedido){
-			   $.ajax({
-					url:"PedidoAction",
-					type:"GET",
-					data:{
-						task : "imprimir",
-						id: numeroPedido
-					},
-					dataType: "text",
-					success : function (data) {
-						noty({
-							  text: "Se ha enviado el pedido a sesion de impresion",
-							  type:data,
-							  layout:"topRight",
-							  closeWith: ['click', 'hover']
-						});
-						response(data);
-					}
-				}); 
+			  $("#task").val('<%= SISINVConstants.TASKS.TASK_IMPRIMIR_FROMSEARCH %>');
+			  $("#pedidoId").val(numeroPedido);
+			  $("#buscar-form").submit();
 			  
 		  }
 		  
 		  function cargarPedido(numeroPedido){
 			  $("#task").val('<%= SISINVConstants.PEDIDO_TASKS.LOAD_PEDIDO %>');
+			  $("#pedidoId").val(numeroPedido);
+			  $("#buscar-form").submit();
+		  }
+		  
+		  function mostrarPedido(numeroPedido){
+			  $("#task").val('<%= SISINVConstants.PEDIDO_TASKS.MOSTRAR_PEDIDO %>');
 			  $("#pedidoId").val(numeroPedido);
 			  $("#buscar-form").submit();
 		  }
@@ -115,7 +108,7 @@
 					 	<input type="hidden" value="" name="pedidoId" id="pedidoId"/>
 					 	<div class="col-lg-12">
 	             		 	<div class="form-group">
-                                <label>Nombre del cliente o número de pedido</label>
+                                <label>Nombre del cliente o vendedor</label>
                                 <input type="text" class="form-control" placeholder="Texto a buscar" name="txtBuscar" value="${nombre}">
                             </div>
                         </div>
@@ -147,24 +140,26 @@
 					 		</div>
 					 		<div class="panel-body">
 					 			<div class="table-responsive">
-					 				 <table class="table table-bordered table-hover table-striped">
+					 				 <table id="tab_pedidos" class="table table-bordered table-hover table-striped">
                                        <thead>
                                            <tr>
-                                               <th># Pedido</th>
+                                               <th class="hidden-sm hidden-xs"># Pedido</th>
                                                <th>Fecha</th>
                                                <th>Cliente</th>
                                                <th>Total</th>
+                                               <th class="hidden-sm hidden-xs">Detalle</th>
                                                <th>Imprimir</th>
-                                               <th>Cargar pedido</th>
+                                               <th>Cargar y modificar pedido</th>
                                            </tr>
                                        </thead>
                                        <tbody>
                                        		 <c:forEach items="${pedidos}" var="item">
 											    <tr>
-											      <td><c:out value="${item.id}" /></td>
+											      <td class="hidden-sm hidden-xs"><c:out value="${item.id}" /></td>
 											      <td><fmt:formatDate pattern="dd/MM/yyyy" value="${item.fecha}" /></td>
 											      <td><c:out value="${item.nombre}" /></td>
 											      <td><c:out value="${item.total}" /></td>
+											      <td class="hidden-sm hidden-xs"><button class='btn btn-info fa fa-file-text-o' type='button' onclick='mostrarPedido("${item.id}")'></button></td>
 											      <td><button class='btn btn-info fa fa-print' type='button' onclick='imprimirPedido("${item.id}")'></button></td>
 											      <td><button class='btn btn-info fa fa-arrow-circle-o-up' type='button' onclick='cargarPedido("${item.id}")'></button></td>
 											    </tr>

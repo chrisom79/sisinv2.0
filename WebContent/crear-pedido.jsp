@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
+<%@ page import="com.chrisom.sisinv.utils.SISINVConstants"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -57,7 +58,17 @@
 									id : m.id,
 									nombre : m.nombre,
 									precio : m.precioCompra,
-									porcentaje : m.porcentaje
+									porcentaje : m.porcentaje,
+									piezas : m.piezas,
+									iva : m.iva,
+									comision : m.comision,
+									oferta : m.oferta != undefined ? m.oferta.ofertaCompleta : "",
+									oferta_tipo : m.oferta != undefined ? m.oferta.tipo : 0,
+									oferta_desc : m.oferta != undefined ? m.oferta.descuento : 0,
+									oferta_compra : m.oferta != undefined ? m.oferta.compra : 0,
+									oferta_lleva : m.oferta != undefined ? m.oferta.lleva : 0,
+									oferta_por : m.oferta != undefined ? m.oferta.por : 0
+									
 								}
 							});
 							response(array);
@@ -70,7 +81,16 @@
 							nombre : ui.item.nombre,
 							precio_compra : ui.item.precio,
 							precio : ui.item.precio,
-							porcentaje : ui.item.porcentaje
+							porcentaje : ui.item.porcentaje,
+							piezas : ui.item.piezas,
+							iva : ui.item.iva,
+							comision : ui.item.comision === "" || ui.item.comision == undefined?0:ui.item.comision,
+						    oferta : ui.item.oferta,
+						    oferta_tipo : ui.item.oferta_tipo,
+						    oferta_desc : ui.item.oferta_desc,
+						    oferta_compra : ui.item.oferta_compra,
+						    oferta_lleva : ui.item.oferta_lleva,
+						    oferta_por : ui.item.oferta_por
 						}
 				}
 			})
@@ -117,51 +137,139 @@
 	        		.appendTo( ul );
     		};
 			
-		    dialog = $( "#dialog-form" ).dialog({
+		    dialog = $("#dialog-form").dialog({
 		        autoOpen: false,
-		        height: 500,
-		        width: 500,
+		        autoResize: true,
 		        modal: true,
+		        minWidth: 470,
 		        buttons: {
 		          "Agregar": function() {
 		        	  sum = 0.0;
+		        	  precio_final = 0.0;
 		        	  selected.cantidad = $("#txtCantidad").val();
-		        	  selected.importe = Math.round((selected.cantidad * selected.precio) * 100) / 100;
-		        	  $("#list-prods > tbody:last-child").append("<tr id='"+selected.id+"'>"+
-		        			  "<td id='t-cantidad'>"+ selected.cantidad
-		        			  +"</td><td id='t-nombre'>"+ selected.nombre
-		        			  +"</td><td id='t-precio'>"+ selected.precio
-		        			  +"</td><td id='t-importe' class='precio'>"+ selected.importe
-		        			  +"</td><td><button class='btn btn-info fa fa-trash' type='button' onclick='removeRow("+selected.id+")'></button>"
-		        			  +"</td></tr>");
+		        	  if(selected.oferta_tipo == 1) {
+		        		  precio_final = selected.precio - (selected.precio * (selected.oferta_desc / 100));
+		        	  } 
+		        	  else
+		        		  precio_final = selected.precio;
+		        	  
+		        	  selected.importe = Math.round((selected.cantidad * precio_final) * 100) / 100;
+		        	  
+		        	  if(selected.oferta_tipo == 2) {
+		        		  if(selected.cantidad >= selected.oferta_lleva) {
+		        			  var rebaja = selected.precio *  Math.floor(selected.cantidad / selected.oferta_lleva);
+		        			  selected.importe = Math.round((selected.importe - rebaja) * 100) / 100;
+		        		  }  
+		        	  }
+		        	  
+		        	  if(selected.oferta_tipo == 3) {
+		        		  if(selected.cantidad >= selected.oferta_compra) {
+		        			  var precio_oferta = selected.oferta_por * Math.floor(selected.cantidad / selected.oferta_compra);
+		        			  selected.importe = ((selected.cantidad % selected.oferta_compra) * precio_final) + precio_oferta;
+		        		  }
+		        	  }
+		        	  
+		        	  var part1 = "<tr id='"+selected.id+"'>"+
+        			  "<td id='t-cantidad'>" + selected.cantidad
+        			  +"</td><td id='t-nombre'>" + selected.nombre
+        			  +"</td><td id='t-precio-regular'>" + selected.precio
+        			  +"</td><td id='t-precio-final'>" + precio_final
+        			  +"</td><td id='t-importe' class='precio'>"+ selected.importe
+        			  +"</td><td id='t-oferta'> ";
+        			  
+        			  var part2 =  selected.oferta != "" ? "<a href='#' data-toggle='tooltip' title='" + selected.oferta + "'><i class='fa fa-info-circle fa-fw'></i></a>" : "";
+        			  
+        			  var part3 = "</td><td><button class='btn btn-info fa fa-trash' type='button' onclick='removeRow(&apos;"+selected.id+"&apos;)'></button>"
+        			  +"</td></tr>";
+        			  
+		        	  $("#list-prods > tbody:last-child").append(part1 + part2 + part3);
 		        	  $(".precio").each(function() {
 		        		  var value = $(this).text();
 		        		  if(!isNaN(value) && value.length != 0) {
 		        		  	sum += parseFloat(value);
 		        		  }
 		        	  });
+		        	  sum = Number((sum).toFixed(2)); 
 		        	  $("#importe-total").text("Total: " + sum);
-		        	  
-		        	  dialog.dialog( "close" );
+		        	  dialog.dialog("close");
 		          },
 		          "Cerrar": function() {
-		            dialog.dialog( "close" );
+		            dialog.dialog("close");
 		          }
 		        },
 		        close: function() {
 		        	$("#searchProd").val("");
 		        	$("#searchProd").focus();
+		        },
+		        open: function() {
+		        	$("#oferta-alert").remove();
+		        	if(selected.oferta != "")
+		        		$(this).append("<div id='oferta-alert' class='alert alert-warning'> " + selected.oferta + " </div>");
+		        }
+		      });
+		    
+		    dialog_prod = $("#upd-prod").dialog({
+		        autoOpen: false,
+		        autoResize: true,
+		        modal: true,
+		        buttons: {
+		          "Cambiar": function() {
+		        	  $.ajax({
+							url:"ProductoAction",
+							type:"GET",
+							data:{
+								prevId : selected.id,
+								txtNombre : selected.nombre,
+								txtPiezas : selected.piezas,
+								txtPrecioComp : selected.precio_compra,
+								txtGanancia : selected.porcentaje,
+								txtIVA : selected.iva,
+								txtCodigo : $("#txtCodigo").val() === ""? selected.id:$("#txtCodigo").val(),
+								txtComision : $("#txtComision").val() === ""? selected.comision:$("#txtComision").val(),
+								task : "<%= SISINVConstants.TASKS.TASK_EDITAR %>"
+							},
+							dataType: "json",
+							success : function (data) {
+								$("#dialog-id").text(data.id);
+								$("#dialog-comision").text(data.comision);
+								selected.id = data.id;
+								selected.comision = data.comision
+								$("#txtCodigo").val("");
+								$("#txtComision").val("");
+								dialog_prod.dialog("close");
+							}
+						});
+		          },
+		          "Cerrar": function() {
+		            dialog_prod.dialog("close");
+		          }
+		        },
+		        close: function() {
+		        	
 		        }
 		      });
 		    
 		    $("#add-prod").on("click", function() {
-		    	selected.precio = selected.precio_compra + (selected.precio_compra * (selected.porcentaje / 100));
+		    	selected.precio = (selected.precio_compra + (selected.precio_compra * (selected.porcentaje / 100))).toFixed(2);
 		    	$("#dialog-id").text(selected.id);
 		    	$("#dialog-nombre").text(selected.nombre);
 		    	$("#dialog-precio").text("$ " + selected.precio);
+		    	$("#dialog-comision").text(selected.comision);
 		    	$("#txtCantidad").val("");
 		        dialog.dialog( "open" );
 		        $("#add-prod").tooltipster('hide');
+		     });
+		    
+		    $("#upd-id").on("click", function() {
+		    	$("#div-comision").hide();
+		    	$("#div-codigo").show();
+		    	dialog_prod.dialog("open");
+		     });
+		    
+		    $("#upd-comision").on("click", function() {
+		    	$("#div-comision").show();
+		    	$("#div-codigo").hide();
+		    	dialog_prod.dialog("open");
 		     });
 		    
 		    $("#remove-user").on("click", function(){
@@ -179,21 +287,33 @@
 			            layout      : 'topRight',
 			            theme       : 'defaultTheme',
 			            buttons     : [
-			                {addClass: 'btn btn-primary', text: 'Si', onClick: function ($noty) {
-			                	submitInfo("imprimir");
-			                    $noty.close();
-			                    
-			                }
-			                },
-			                {addClass: 'btn btn-info', text: 'No', onClick: function ($noty) {
-			                	submitInfo("crear");
+			            {
+			              	addClass: 'btn btn-primary', text: 'Si', 
+			               	onClick: function ($noty) {
+			               		submitInfo("imprimir");
+			                	$noty.close();
+			               	}
+			            },
+			            {
+			            	addClass: 'btn btn-info', text: 'No', onClick: function ($noty) {
+			                submitInfo("crear");
 			                    $noty.close();
 			             
 			                }
 			                }
 			            ]
 			        });
+			    	$("#crear-pedido").hide();
+			    	$("#cerrar-pedido").show();
 		    	}
+		    	
+		    });
+		    
+		    $("#cerrar-pedido").on("click", function(){
+		    	$("#crear-pedido").show();
+		    	$("#cerrar-pedido").hide();
+		    	$("#task").val('<%= SISINVConstants.TASKS.TASK_CERRAR %>');
+		    	$("#form-pedido").submit();
 		    	
 		    });
 		    
@@ -231,6 +351,10 @@
 		             $(element).tooltipster('hide');
 		         }
 		    });
+		    
+		    $("#acc_pedido").accordion({
+		        heightStyle: "content"
+		    });
 		});
 		
 		function removeRow(id) {
@@ -244,13 +368,13 @@
       		  	sum += parseFloat(value);
       		  }
       	  });
-      	  $("#importe-total").text("Total: " + sum);
+      	  $("#importe-total").text("Total: " + sum.toFixed(2));
 		}
 		
 		function convertTableToString() {
 			var list = "";
 			$("#list-prods > tbody > tr").each(function(i, row) {
-				list += $(row).find("td[id*='t-cantidad']").text() + "," + $(row).find("td[id*='t-precio']").text() + "," + $(row).prop("id") + ";";
+				list += $(row).find("td[id*='t-cantidad']").text() + "," + $(row).find("td[id*='t-precio-regular']").text() + "," + $(row).find("td[id*='t-precio-final']").text() + "," + $(row).find("td[id*='t-importe']").text() + "," + $(row).prop("id") + ";";
 			});
 			
 			return list;
@@ -318,89 +442,81 @@
                             </div>
                         </div>
 			         </div>
-	             	<div class="row">
-	                    <div class="col-lg-24">
-	                        <ol class="breadcrumb">
-	                            <li class="active">
-	                                <i class="fa fa-male"></i> Datos del cliente
-	                            </li>
-	                        </ol>
-	                    </div>
-	                </div>
-			         <div class="row">
-             		 	<div class="col-lg-12">
-	             		 	<div class="form-group">
-                                <label>Nombre</label>
-                                <input class="form-control" id="txtNombre" name="txtNombre">
-                            </div>
-                        </div>
-                        
-			         </div>
-			         <div class="row">
-             		 	<div class="col-lg-12">
-	             		 	<div class="form-group">
-                                <label>Dirección</label>
-                                <input class="form-control" id="txtDireccion" name="txtDireccion">
-                            </div>
-                        </div>
-                        <div class="col-lg-7">
-	             		 	<div class="form-group">
-                                <label>Ciudad</label>
-                                <input class="form-control" id="txtCiudad" name="txtCiudad">
-                            </div>
-                        </div>
-			         </div>
-			         <div class="row">
-	                    <div class="col-lg-24">
-	                        <ol class="breadcrumb">
-	                            <li class="active">
-	                                <i class="fa fa-shopping-cart"></i> Productos
-	                            </li>
-	                        </ol>
-	                    </div>
-	                </div>
-	                <!-- row -->
-	                 <div class="row">
-			         	<div class="col-lg-12">
-	             		 	<div  class="form-group">
-                                <input id="searchProd" class="form-control" type="text" placeholder="Nombre del producto">
-                            </div>
-                        </div>
-                        <div class="col-lg-2">
-                        	<button id="add-prod" class="btn btn-success fa fa-plus" type="button"></button>
-                        </div>
-                      </div>
-                      <!-- row -->
-                      <div class="row">
-                    	<div class="col-lg-18">
-                               <div class="table-responsive">
-                                   <table id="list-prods" class="table table-bordered table-hover table-striped">
-                                       <thead>
-                                           <tr>
-                                               <th>Cantidad</th>
-                                               <th>Articulo</th>
-                                               <th>Precio</th>
-                                               <th>Importe</th>
-                                               <th>Acciones</th>
-                                           </tr>
-                                       </thead>
-                                       <tbody>
-                                       		
-                                       </tbody>
-                                   </table>
-                               </div>
-                           
-		 	 			</div>
-		 			</div>
-		 			 <div class="row">
-                    	<div class="col-lg-24">
-                    		<div  class="alert alert-success">
-			    				<p id="importe-total">Total: 0.00</p>
-			    			</div>
+	                <div id="acc_pedido">
+	                	<h3>Datos del cliente</h3>
+	                	<div>
+				         	<div class="row">
+	             		 		<div class="col-lg-12">
+		             		 		<div class="form-group">
+	                                	<label>Nombre</label>
+	                                	<input class="form-control" id="txtNombre" name="txtNombre">
+	                            	</div>
+	                        	</div>
+	                        
+				         	</div>
+				         	<div class="row">
+	             		 		<div class="col-lg-12">
+		             		 		<div class="form-group">
+	                                	<label>Dirección</label>
+	                                	<input class="form-control" id="txtDireccion" name="txtDireccion">
+	                            	</div>
+	                        	</div>
+	                       	 	<div class="col-lg-7">
+		             		 		<div class="form-group">
+	                                	<label>Ciudad</label>
+	                                	<input class="form-control" id="txtCiudad" name="txtCiudad">
+	                            	</div>
+	                        	</div>
+				         	</div>
+				     	</div>
+	                	<h3>Productos</h3>
+	                	<div>
+	                	<!-- row -->
+	                		<div class="row">
+			         			<div class="col-lg-12">
+	             		 			<div  class="form-group">
+                                		<input id="searchProd" class="form-control" type="text" placeholder="Nombre del producto">
+                            		</div>
+                        		</div>
+                        		<div class="col-lg-2">
+                        			<button id="add-prod" class="btn btn-success fa fa-plus" type="button"></button>
+                        		</div>
+                   			</div>
+                   			<br/>
+                      		<!-- row -->
+                   			<div class="row">
+                   				<div class="col-lg-18">
+                        			<div class="table-responsive">
+                            			<table id="list-prods" class="table table-bordered table-hover table-striped">
+                                			<thead>
+                                    			<tr>
+                                               		<th>Cantidad</th>
+                                               		<th>Articulo</th>
+                                               		<th>Precio Regular</th>
+                                               		<th>Precio Final</th>
+                                               		<th>Importe</th>
+                                               		<th>Oferta</th>
+                                               		<th>Acciones</th>
+                                        		</tr>
+                                 			</thead>
+                     						<tbody>
+                                    		</tbody>
+                        				</table>
+                   					</div>
+		 	 					</div>
+		 					</div>
+		 				
+		 					<br/>
+		 			 		<div class="row">
+                    			<div class="col-lg-24">
+                    				<div  class="alert alert-success">
+			    						<p id="importe-total">Total: 0.00</p>
+			    					</div>
+                    			</div>
+                    		</div>
                     	</div>
-                    </div>
                     <!-- row -->
-                    <div class="row">
+                    <!-- <div class="row">
 	                    <div class="col-lg-24">
 	                        <ol class="breadcrumb">
 	                            <li class="active">
@@ -408,39 +524,44 @@
 	                            </li>
 	                        </ol>
 	                    </div>
-	                </div>
-	                <div class="row">
-	                	<div class="col-lg-12">
-	             		 	<div  class="form-group">
-                                <input id="searchVend" name="searchVend" class="form-control" placeholder="Nombre o usuario del vendedor">
-                            </div>
-                        </div>
-	                </div>
-	                <div class="row">
-			    		<div class="col-lg-4">
-			    			<div  class="form-group">
-			    				<label>Identificador</label>
-			    				<p id="vend-id" class="form-control-static"></p>
+	                </div> -->
+	                	<h3>Vendedor</h3>
+	                	<div>
+	                		<div class="row">
+	                			<div class="col-lg-12">
+	             		 			<div  class="form-group">
+                                		<input id="searchVend" name="searchVend" class="form-control" placeholder="Nombre o usuario del vendedor">
+                            		</div>
+                        		</div>
+	                		</div>
+	                		<div class="row">
+			    				<div class="col-lg-4 hidden-sm hidden-xs">
+			    					<div  class="form-group">
+			    						<label>Identificador</label>
+			    						<p id="vend-id" class="form-control-static"></p>
+			    					</div>
+			    				</div>
+			    				<div class="col-lg-10">
+			    					<div  class="form-group">
+			    						<label>Nombre</label>
+			    						<p id="vend-nombre" class="form-control-static"></p>
+			    					</div>
+			    				</div>
+			    				<div class="col-lg-5 hidden-sm hidden-xs">
+			    					<div  class="form-group">
+			    						<label>Usario</label>
+			    						<p id="vend-usuario" class="form-control-static"></p>
+			    					</div>
+			    				</div>
+			    				<div class="col-lg-2">
+			    					<button id="remove-user" type="button" class="btn btn-info fa fa-trash" ></button>
+			    				</div>
 			    			</div>
-			    		</div>
-			    		<div class="col-lg-10">
-			    			<div  class="form-group">
-			    				<label>Nombre</label>
-			    				<p id="vend-nombre" class="form-control-static"></p>
-			    			</div>
-			    		</div>
-			    		<div class="col-lg-5">
-			    			<div  class="form-group">
-			    				<label>Usario</label>
-			    				<p id="vend-usuario" class="form-control-static"></p>
-			    			</div>
-			    		</div>
-			    		<div class="col-lg-2">
-			    			<button id="remove-user" type="button" class="btn btn-info fa fa-trash" ></button>
 			    		</div>
 			    	</div>
+			    	<br/>
 		         	<button id="crear-pedido" type="button" class="btn btn-primary" >Crear</button>
-		         	<button id="imprimir-pedido" type="button" class="btn btn-info" >Imprimir</button>
+		         	<button id="cerrar-pedido" type="button" class="btn btn-primary" style="display:none;" >Cerrar</button>
 		         </form>
 	          </div>
 			</div>
@@ -448,15 +569,18 @@
 	<!-- dialog -->
     <div id="dialog-form" class="panel panel-default">
     	<div class="row">
-    		<div class="col-lg-6">
+    		<div class="col-lg-10">
     			<div  class="form-group">
     				<label>Codigo</label>
     				<p id="dialog-id" class="form-control-static"></p>
     			</div>
     		</div>
+    		<div class="col-lg-3">
+                 <button id="upd-id" class="btn btn-success" type="button">Cambiar</button>
+            </div>
     	</div>
     	<div class="row">
-    		<div class="col-lg-6">
+    		<div class="col-lg-24">
     			<div  class="form-group">
     				<label>Nombre</label>
     				<p id="dialog-nombre" class="form-control-static"></p>
@@ -464,7 +588,7 @@
     		</div>
     	</div>
     	<div class="row">
-    		<div class="col-lg-6">
+    		<div class="col-lg-24">
     			<div  class="form-group">
     				<label>Precio</label>
     				<p id="dialog-precio" class="form-control-static"></p>
@@ -472,13 +596,38 @@
     		</div>
     	</div>
     	<div class="row">
-        	<div class="col-lg-12">
+        	<div class="col-lg-10">
+          		<div  class="form-group">
+    				<label>Comisión</label>
+    				<p id="dialog-comision" class="form-control-static"></p>
+    			</div>
+            </div>
+            <div class="col-lg-3">
+                 <button id="upd-comision" class="btn btn-success" type="button">Cambiar</button>
+            </div>
+        </div>
+    	<div class="row">
+        	<div class="col-lg-5">
           		<div class="form-group">
                 	<label>Cantidad</label>
                     <input class="form-control" id="txtCantidad" name="txtCantidad">
-                    </div>
-               	</div>
+                </div>
+            </div>
         </div>
+    </div>
+    <div id="upd-prod" class="panel panel-default">
+    	<div class="col-lg-18" id="div-codigo">
+			<div class="form-group">
+	        	<label>Código</label>
+	            <input class="form-control" id="txtCodigo" name="txtCodigo" value="">
+	        </div>
+	    </div>
+	    <div class="col-lg-18" id="div-comision">
+			<div class="form-group">
+	        	<label>Comisión</label>
+	            <input class="form-control" id="txtComision" name="txtComision" value="">
+	        </div>
+	    </div>
     </div>
 </body>
 </html>

@@ -22,6 +22,7 @@ public class PedidoModel {
 	}
 	
 	public String insertPedido(NotaRemision pedido) {
+		pedido.setEnviado(Boolean.FALSE);
 		return dao.insert(pedido);
 	}
 	
@@ -29,8 +30,8 @@ public class PedidoModel {
 		return dao.findLastPedidos(limit);
 	}
 	
-	public List<NotaRemision> findPedidosByParameters(String value, String fechaInicio, String fechaFinal) {
-		return dao.findPedidosByParameters(value, fechaInicio, fechaFinal);
+	public List<NotaRemision> findPedidosByParameters(String value, String fechaInicio, String fechaFinal, Boolean enviado) {
+		return dao.findPedidosByParameters(value, fechaInicio, fechaFinal, enviado);
 	}
 	
 	public NotaRemision findPedidoById(Integer value) {
@@ -51,5 +52,21 @@ public class PedidoModel {
 	
 	public void registerComision(String id) throws Exception {
 		dao.registerComision(id);
+	}
+	
+	public Boolean removeProducto(Integer idPedido, String idProducto)  {
+		return dao.removeRow(idPedido, idProducto);
+	}
+	
+	public Boolean updateCantidad(Integer idPedido, String idProducto, Integer cantidad) {
+		return dao.updateCantidad(idPedido, idProducto, cantidad);
+	}
+	
+	public Boolean updateEnviado(Integer idRuta, Boolean enviado) {
+		return dao.updateEnviado(idRuta, enviado);
+	}
+	
+	public Boolean updateRuta(Integer idPedido, Integer idRuta) {
+		return dao.updateRuta(idPedido, idRuta);
 	}
 }

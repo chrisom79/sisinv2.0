@@ -76,6 +76,17 @@
                    </ul>
                </li>
                <li>
+                   <a href="javascript:;" data-toggle="collapse" data-target="#mngmt-ofertas"><i class="fa fa-fw fa-star"></i> Ofertas<i class="fa fa-fw fa-caret-down"></i></a>
+                   <ul id="mngmt-ofertas" class="collapse">
+                        <li id="crear_oferta">
+                           <a href="crear-oferta.jsp">Crear</a>
+                       </li>
+                       <li id="buscar_oferta">
+                           <a href="buscar-oferta.jsp">Buscar</a>
+                       </li>
+                   </ul>
+               </li>
+               <li>
                    <a href="javascript:;" data-toggle="collapse" data-target="#mngmt-files"><i class="fa fa-fw fa-file"></i> Archivos<i class="fa fa-fw fa-caret-down"></i></a>
                    <ul id="mngmt-files" class="collapse">
                        <li id="importar">
@@ -92,9 +103,9 @@
                        <li id="comisiones">
                            <a href="comisiones.jsp">Comisiones</a>
                        </li>
-                       <li id="facturacion">
+                       <!-- <li id="facturacion">
                            <a href="facturacion.jsp">Facturación</a>
-                       </li>
+                       </li> -->
                    </ul>
                </li>
            </ul>

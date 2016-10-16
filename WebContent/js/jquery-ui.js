@@ -7167,7 +7167,7 @@ $.widget( "ui.autocomplete", {
 
 		this._initSource();
 		this.menu = $( "<ul>" )
-			.addClass( "ui-autocomplete ui-front" )
+			.addClass( "ui-autocomplete ui-front scrollbar" )
 			.appendTo( this._appendTo() )
 			.menu({
 				// disable ARIA support, the live region takes care of that

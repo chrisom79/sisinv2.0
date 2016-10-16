@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.transform.Transformers;
 import org.hibernate.type.BooleanType;
 import org.hibernate.type.DoubleType;
@@ -89,7 +90,7 @@ public class PedidoDAO implements DAOInterface<NotaRemision> {
 		return pedidos;
 	}
 	
-	public List<NotaRemision> findPedidosByParameters(String value, String fechaInicio, String fechaFinal) {
+	public List<NotaRemision> findPedidosByParameters(String value, String fechaInicio, String fechaFinal, Boolean enviado) {
 		List<NotaRemision> pedidos = new ArrayList<NotaRemision>();
 		Session session = SessionFactoryDB.getSessionFactory().openSession();
 		StringBuffer sb = new StringBuffer("from NotaRemision ");
@@ -97,7 +98,9 @@ public class PedidoDAO implements DAOInterface<NotaRemision> {
 		if((value != null && !value.isEmpty()) || fechaInicio != null || fechaFinal != null) {
 			sb.append("where ");
 			if(value != null && !value.isEmpty()){
-				sb.append("nombre like '%" + value + "%' and ");
+				sb.append("(nombre like '%" + value + "%' or ");
+				sb.append("vendedor.nombre like '%" + value + "%' or ");
+				sb.append("vendedor.usuario like '%" + value + "%') and ");
 			}
 			
 			if(fechaInicio != null) {
@@ -106,6 +109,10 @@ public class PedidoDAO implements DAOInterface<NotaRemision> {
 			
 			if(fechaFinal != null) {
 				sb.append("and fecha <= '" + fechaFinal + "' ");
+			}
+			
+			if(enviado != null) {
+				sb.append("and enviado = " + enviado + " ");
 			}
 		}
 		
@@ -152,7 +159,7 @@ public class PedidoDAO implements DAOInterface<NotaRemision> {
 		Session session = SessionFactoryDB.getSessionFactory().openSession();
 		
 		if(id != null) {
-			StringBuffer sb = new StringBuffer("select nrd.cantidad, p.producto_id as id, p.nombre as articulo, nrd.precio, nrd.cargado ");
+			StringBuffer sb = new StringBuffer("select nrd.cantidad, p.producto_id as id, p.nombre as articulo, nrd.precio, nrd.precio_final as precioFinal, nrd.cargado, nrd.importe ");
 			sb.append("from nota_remision nr ");
 			sb.append("inner join nota_remision_detalle nrd on nr.notaremision_id = nrd.notaremision_id ");
 			sb.append("inner join producto p on nrd.producto_id = p.producto_id where nr.notaremision_id = :id ");
@@ -161,9 +168,11 @@ public class PedidoDAO implements DAOInterface<NotaRemision> {
 					.addScalar("id", new StringType())
 					.addScalar("articulo", new StringType())
 					.addScalar("precio", new DoubleType())
+					.addScalar("precioFinal", new DoubleType())
+					.addScalar("importe", new DoubleType())
 					.addScalar("cargado", new BooleanType())
 					.setResultTransformer(Transformers.aliasToBean(ItemPedido.class));
-			query.setParameter("id", id);
+			query.setParameter("id", id); 
 			items = query.list();
 		}
 		
@@ -174,8 +183,8 @@ public class PedidoDAO implements DAOInterface<NotaRemision> {
 		Session session = SessionFactoryDB.getSessionFactory().openSession();
 		try {
 			session.beginTransaction();
-			Query query = session.createQuery("UPDATE NotaRemision set fecha_pago_comision = CURRENT_DATE WHERE id = :id");
-			query.setParameter("id", Integer.valueOf(field));
+			Query query = session.createQuery("UPDATE NotaRemisionDetalle set fecha_pago_comision = CURRENT_DATE WHERE producto_id = :id");
+			query.setParameter("id", field);
 			query.executeUpdate();
 			session.getTransaction().commit();
 		} catch (Exception ex) {
@@ -183,6 +192,100 @@ public class PedidoDAO implements DAOInterface<NotaRemision> {
 			session.getTransaction().rollback();
 			throw new Exception();
 		} 
+	}
+	
+	public Boolean removeRow(Integer idPedido, String idProducto) {
+		Session session = SessionFactoryDB.getSessionFactory().openSession();
+		Boolean success = false;
+		try {
+			Transaction transaction = session.beginTransaction();
+			Query query = session.createQuery("delete from NotaRemisionDetalle where notaRemision.id = :idPedido and productoId = :idProducto");
+			query.setParameter("idPedido", idPedido);
+			query.setParameter("idProducto", idProducto);
+			int n = query.executeUpdate();
+			transaction.commit();
+			if(n > 0)
+				success = true;
+			else
+				success = false;
+		} catch (Exception ex) {
+			session.getTransaction().rollback();
+			success = false;
+		} 
+		
+		return success;
+	}
+	
+	public Boolean updateCantidad(Integer idPedido, String idProducto, Integer cantidad) {
+		Session session = SessionFactoryDB.getSessionFactory().openSession();
+		Boolean success = false;
+		try {
+			session.beginTransaction();
+			Query query = session.createQuery("UPDATE NotaRemisionDetalle set cantidad = :cantidad where notaRemision.id = :idPedido and productoId = :idProducto");
+			query.setParameter("cantidad", cantidad);
+			query.setParameter("idPedido", idPedido);
+			query.setParameter("idProducto", idProducto);
+			int n = query.executeUpdate();
+			if(n > 0)
+				success = true;
+			else
+				success = false;
+			session.getTransaction().commit();
+		} catch (Exception ex) {
+			System.out.println(ex.getStackTrace().toString());
+			session.getTransaction().rollback();
+			success = false;
+		}
+		
+		return success;
+	}
+	
+	public Boolean updateRuta(Integer idPedido, Integer idRuta) {
+		Session session = SessionFactoryDB.getSessionFactory().openSession();
+		Boolean success = false;
+		try {
+			session.beginTransaction();
+			Query query = session.createQuery("UPDATE NotaRemision set ruta.id = :idRuta where id = :idPedido");
+			query.setParameter("idRuta", idRuta);
+			query.setParameter("idPedido", idPedido);
+			
+			int n = query.executeUpdate();
+			if(n > 0)
+				success = true;
+			else
+				success = false;
+			session.getTransaction().commit();
+		} catch (Exception ex) {
+			System.out.println(ex.getStackTrace().toString());
+			session.getTransaction().rollback();
+			success = false;
+		}
+		
+		return success;
+	}
+	
+	public Boolean updateEnviado(Integer idRuta, Boolean enviado) {
+		Session session = SessionFactoryDB.getSessionFactory().openSession();
+		Boolean success = false;
+		try {
+			session.beginTransaction();
+			Query query = session.createQuery("UPDATE NotaRemision set enviado = :enviado where ruta.id = :idRuta");
+			query.setParameter("enviado", enviado);
+			query.setParameter("idRuta", idRuta);
+			
+			int n = query.executeUpdate();
+			if(n > 0)
+				success = true;
+			else
+				success = false;
+			session.getTransaction().commit();
+		} catch (Exception ex) {
+			System.out.println(ex.getStackTrace().toString());
+			session.getTransaction().rollback();
+			success = false;
+		}
+		
+		return success;
 	}
 
 }

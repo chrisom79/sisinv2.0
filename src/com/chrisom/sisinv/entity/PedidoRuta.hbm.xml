@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 20-jul-2016 18:17:19 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.chrisom.sisinv.entity.PedidoRuta" table="pedido_ruta" catalog="chrisomj_dbsisinv">
+        <id name="id" type="int">
+            <column name="pedido_ruta_id" />
+            <generator class="increment" />
+        </id>
+        <property name="nombre" type="string">
+            <column name="nombre" length="99" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

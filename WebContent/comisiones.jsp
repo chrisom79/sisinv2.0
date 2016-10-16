@@ -152,28 +152,32 @@
 					 <div class="row">
 					 	<div class="col-lg-24">
 					 		<div class="panel-heading">
-					 			<h3 class="panel-title"><i class="fa fa-truck fa-fw"></i> Lista de pedidos por usuario</h3>
+					 			<h3 class="panel-title"><i class="fa fa-truck fa-fw"></i> Lista de productos por pedido</h3>
 					 		</div>
 					 		<div class="panel-body">
 					 			<div class="table-responsive">
 					 				 <table class="table table-bordered table-hover table-striped" id="list-pedidos">
                                        <thead>
                                            <tr>
-                                               <th># Pedido</th>
-                                               <th>Fecha</th>
-                                               <th>Cliente</th>
+                                               <th>No. Pedido</th>
+                                               <th>Codigo</th>
+                                               <th>Descripcion</th>
+                                               <th>Cantidad</th>
                                                <th>Total</th>
+                                               <th>Comision</th>
                                                <th>Pagado</th>
                                            </tr>
                                        </thead>
                                        <tbody>
-                                       		 <c:forEach items="${pedidos}" var="item">
-											    <tr id="${item.id}" <c:if test="${not empty item.fechaPagoComision}">class="selected"</c:if>>
-											      <td id="t-id"><c:out value="${item.id}" /></td>
-											      <td><fmt:formatDate pattern="dd/MM/yyyy" value="${item.fecha}" /></td>
-											      <td><c:out value="${item.nombre}" /></td>
-											      <td><c:out value="${item.total}" /></td>
-											      <td><c:if test="${not empty item.fechaPagoComision}"><i class="fa fa-check fa-fw"></i></c:if></td>
+                                       		 <c:forEach items="${items}" var="item">
+											    <tr id="${item.id}" <c:if test="${not empty item.pagoComision}">class="selected"</c:if>>
+											    <td><c:out value="${item.pedidoNo}" /></td>
+											    <td id="t-id"><c:out value="${item.id}" /></td>
+										      	<td><c:out value="${item.articulo}" /></td>
+											    <td><c:out value="${item.cantidad}" /></td>
+											      <td><c:out value="${item.importe}" /></td>
+											      <td><c:out value="${item.comision}" /></td>
+											      <td><c:if test="${not empty item.pagoComision}"><i class="fa fa-check fa-fw"></i></c:if></td>
 											    </tr>
 											  </c:forEach>
                                        </tbody>
@@ -182,7 +186,7 @@
 					 		</div>
 					 	</div>
 					 </div>
-					 <c:if test="${fn:length(pedidos) gt 0}">
+					 <c:if test="${fn:length(items) gt 0}">
 					 <div class="row">
                     	<div class="col-lg-24">
                     		<div  class="alert alert-success">

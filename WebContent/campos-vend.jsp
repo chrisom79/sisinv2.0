@@ -36,11 +36,5 @@
                     <input type="text" class="form-control" id="txtUsuario" name="txtUsuario" value="${vend.usuario}">
                 </div>
             </div>
-            <div class="col-lg-5">
-            	<label>Comision</label>
-  		 	<div class="form-group input-group">
-  		 		<span class="input-group-addon">%</span>
-                    <input type="text" class="form-control" id="txtComision" name="txtComision" value="${vend.comision}">
-                </div>
-            </div>
+            
 </div>

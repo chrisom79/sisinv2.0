@@ -30,7 +30,7 @@
 			        			  "<td id='t-cantidad'>"+ m.id +"</td>"
 			        			  +"<td>"+ formatDate +"</td>"
 			        			  +"<td>"+ m.nombre +"</td>"
-			        			  +"<td>"+ m.total+"</td>"
+			        			  +"<td>"+ m.total.toFixed(2)+"</td>"
 			        			  +"</tr>");
 					});
 					
@@ -80,8 +80,30 @@
                     </div>
                 </div>
 	             </c:if>
-	             
+	           
+                    
                 <div class="row">
+                 <div class="col-lg-6 col-md-6">
+                        <div class="panel panel-green">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <i class="fa fa-truck fa-5x"></i>
+                                    </div>
+                                    <div class="col-xs-18 text-right">
+                                        <div>Pedidos de hoy</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="pedido-ruta.jsp">
+                                <div class="panel-footer">
+                                    <span class="pull-left">Mostrar</span>
+                                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                 	<div class="col-lg-6 col-md-6">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
@@ -126,27 +148,7 @@
                         </div>
                     </div>
                     
-                    <div class="col-lg-6 col-md-6">
-                        <div class="panel panel-primary">
-                            <div class="panel-heading">
-                                <div class="row">
-                                    <div class="col-xs-3">
-                                        <i class="fa fa-users fa-5x"></i>
-                                    </div>
-                                    <div class="col-xs-18 text-right">
-                                        <div>Vendedores</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <a href="buscar-vend.jsp">
-                                <div class="panel-footer">
-                                    <span class="pull-left">Buscar</span>
-                                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                    <div class="clearfix"></div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
+                    
                 </div>
                 <!-- /.row -->
 

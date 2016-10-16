@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 23-abr-2016 14:21:53 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.chrisom.sisinv.entity.Oferta" table="oferta" catalog="chrisomj_dbsisinv">
+        <id name="id" type="int">
+            <column name="oferta_id" />
+            <generator class="assigned" />
+        </id>
+        <property name="descripcion" type="java.lang.String">
+            <column name="descripcion" length="50" not-null="true"/>
+        </property>
+        <property name="tipo" type="int">
+            <column name="tipo" />
+        </property>
+        <property name="descuento" type="int">
+            <column name="descuento" />
+        </property>
+        <property name="compra" type="int">
+            <column name="compra" />
+        </property>
+        <property name="lleva" type="int">
+            <column name="lleva" />
+        </property>
+        <property name="por" type="double">
+            <column name="por" />
+        </property>
+        <property name="precio" type="double">
+            <column name="precio" />
+        </property>
+        
+    </class>
+</hibernate-mapping>

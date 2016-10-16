@@ -16,12 +16,20 @@
 	</div>
 </div>
 <div class="row">
- 		 	<div class="col-lg-5">
- 		 		<label>Precio compra</label>
-  		 	<div class="form-group input-group">
-                    <span class="input-group-addon">$</span>
-                    <input type="text" class="form-control" name="txtPrecioComp" value="${prod.precioCompra}">
-                </div>
+	<div class="col-lg-3">
+		<div class="form-group">
+        	<label>Piezas</label>
+            <input class="form-control" name="txtPiezas" value="${prod.piezas}">
+    	</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-lg-5">
+ 		<label>Precio compra</label>
+ 	<div class="form-group input-group">
+        <span class="input-group-addon">$</span>
+        <input type="text" class="form-control" name="txtPrecioComp" value="${prod.precioCompra}">
+    </div>
             </div>
             <div class="col-lg-3">
             	<label>Ganancia</label>
@@ -38,4 +46,13 @@
                     </label>
                 </div>
             </div>
+</div>
+<div class="row">
+	<div class="col-lg-5">
+    	<label>Comision</label>
+  		<div class="form-group input-group">
+  			<span class="input-group-addon">%</span>
+            <input type="text" class="form-control" id="txtComision" name="txtComision" value="${prod.comision}">
+        </div>
+    </div>
 </div>

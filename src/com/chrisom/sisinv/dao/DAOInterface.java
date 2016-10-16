@@ -4,5 +4,5 @@ public interface DAOInterface <T> {
 	public String insert(T element);
 	public void update(T element) throws Exception;
 	public Long countIds(String id);
-	public void deleteByField(String field);
+	public void deleteByField(String field)  throws Exception;
 }
