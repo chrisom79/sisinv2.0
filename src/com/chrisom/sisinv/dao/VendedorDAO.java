@@ -63,6 +63,23 @@ public class VendedorDAO implements DAOInterface<Vendedor>{
 		return vendedor;
 	}
 	
+	public Vendedor findVendedorByUser(String user) {
+		Session session = SessionFactoryDB.getSessionFactory().openSession();
+		Vendedor vendedor = null;
+		try {
+			Query query = session.createQuery("from Vendedor where usuario = :user");
+			query.setParameter("user", user);
+			
+			vendedor = (Vendedor) query.uniqueResult();
+		
+		} catch (Exception ex) {
+			System.out.println(ex.getStackTrace());
+		} finally {
+			//SessionFactoryDB.shutdown();
+		}
+
+		return vendedor;
+	}
 	public Long countUsernames(String username) {
 		Session session = SessionFactoryDB.getSessionFactory().openSession();
 		Long total = null;

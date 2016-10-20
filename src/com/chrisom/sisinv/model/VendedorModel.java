@@ -2,6 +2,10 @@ package com.chrisom.sisinv.model;
 
 import java.util.List;
 
+import org.apache.shiro.crypto.RandomNumberGenerator;
+import org.apache.shiro.crypto.SecureRandomNumberGenerator;
+import org.apache.shiro.crypto.hash.Sha256Hash;
+
 import com.chrisom.sisinv.dao.VendedorDAO;
 import com.chrisom.sisinv.entity.Vendedor;
 import com.chrisom.sisinv.utils.Algorithms;
@@ -9,7 +13,14 @@ import com.chrisom.sisinv.utils.Algorithms;
 public class VendedorModel {
 	VendedorDAO dao = new VendedorDAO();
 	
-	public void insertVendedor(Vendedor vendedor) {
+	public void insertVendedor(Vendedor vendedor) {		
+		RandomNumberGenerator rng = new SecureRandomNumberGenerator();
+		Object salt = rng.nextBytes();
+		String hashedPasswordBase64 = new Sha256Hash("password", salt,1024).toBase64();
+		
+		vendedor.setPassword(hashedPasswordBase64);
+		vendedor.setSalt(salt.toString());
+		
 		dao.insert(vendedor);		
 	}
 	

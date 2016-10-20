@@ -62,11 +62,10 @@ public class VendedorAction extends HttpServlet {
 			String telefono = request.getParameter("txtTelefono");
 			String usuario = request.getParameter("txtUsuario");
 			
-			if(!model.existsUsername(usuario)) {
-				String defPass = Algorithms.encryptMD5("password");
+			if(!model.existsUsername(usuario)) {				
 				String id = model.createId(nombre);
 				
-				Vendedor vendedor = new Vendedor(id, nombre, telefono, usuario, defPass);
+				Vendedor vendedor = new Vendedor(id, nombre, telefono, usuario);
 				vendedor.setDireccion(direccion);
 				vendedor.setEmail(email);
 				vendedor.setHabilitado(Boolean.TRUE);

@@ -23,16 +23,16 @@ public class Vendedor implements java.io.Serializable {
 	private Boolean habilitado;
 	private Set notaRemisions = new HashSet(0);
 	private Set comisiones = new HashSet(0);
+	private String salt;
 
 	public Vendedor() {
 	}
 
-	public Vendedor(String id, String nombre, String telefono, String usuario, String password) {
+	public Vendedor(String id, String nombre, String telefono, String usuario) {
 		this.id = id;
 		this.nombre = nombre;
 		this.telefono = telefono;
 		this.usuario = usuario;
-		this.password = password;
 	}
 
 	public Vendedor(String id, String nombre, String direccion, String telefono, String usuario, String password,
@@ -126,6 +126,12 @@ public class Vendedor implements java.io.Serializable {
 	public void setComisiones(Set comisiones) {
 		this.comisiones = comisiones;
 	}
-	
-	
+
+	public String getSalt() {
+		return salt;
+	}
+
+	public void setSalt(String salt) {
+		this.salt = salt;
+	}
 }
