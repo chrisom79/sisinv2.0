@@ -37,4 +37,11 @@ public interface SISINVConstants {
 		public final static String ENVIAR = "enviar";
 	}
 	
+	public class SETTINGS_TASKS {
+		public static final String CAMBIAR_PASSWORD = "cambiar_passwd";
+	}
+	
+	public class PROFILE_TASKS {
+		public static final String LOGOUT = "logout";
+	}
 }

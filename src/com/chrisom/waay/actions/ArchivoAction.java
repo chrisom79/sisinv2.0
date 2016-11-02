@@ -1,4 +1,4 @@
-package com.chrisom.actions;
+package com.chrisom.waay.actions;
 
 import java.io.File;
 import java.io.FileInputStream;

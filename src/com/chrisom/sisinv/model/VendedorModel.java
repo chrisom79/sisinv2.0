@@ -2,31 +2,36 @@ package com.chrisom.sisinv.model;
 
 import java.util.List;
 
+import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.Sha256Hash;
+import org.apache.shiro.crypto.hash.SimpleHash;
 
 import com.chrisom.sisinv.dao.VendedorDAO;
 import com.chrisom.sisinv.entity.Vendedor;
 import com.chrisom.sisinv.utils.Algorithms;
+import com.chrisom.sisinv.utils.WaayException;
 
 public class VendedorModel {
 	VendedorDAO dao = new VendedorDAO();
 	
-	public void insertVendedor(Vendedor vendedor) {		
-		RandomNumberGenerator rng = new SecureRandomNumberGenerator();
-		Object salt = rng.nextBytes();
-		String hashedPasswordBase64 = new Sha256Hash("password", salt,1024).toBase64();
-		
-		vendedor.setPassword(hashedPasswordBase64);
-		vendedor.setSalt(salt.toString());
-		
+	public void insertVendedor(Vendedor vendedor) {
+		DefaultPasswordService passwordService = new DefaultPasswordService();
+	    String encPass = passwordService.encryptPassword("password");
+		vendedor.setPassword(encPass);	    
 		dao.insert(vendedor);		
 	}
 	
 	public void updateVendedor(Vendedor vendedor) throws Exception {
 		vendedor.setPassword(dao.findVendedorById(vendedor.getId()).getPassword());
 		dao.update(vendedor);
+	}
+	
+	public void updatePassword(String id, String pass) throws WaayException {
+		DefaultPasswordService passwordService = new DefaultPasswordService();
+	    String encPass = passwordService.encryptPassword(pass);		
+		dao.updatePassword(id, encPass);
 	}
 	
 	public String createId(String nombre) {
@@ -72,6 +77,12 @@ public class VendedorModel {
 	public Vendedor findVendedorById(String value) {
 		return dao.findVendedorById(value);
 	}
+	
+	public Vendedor finVendedorByEmail(String email) {
+		return dao.finVendedorByEmail(email);
+		
+	}
+	
 	public void deleteById(String usuario){
 		dao.logicDeleteById(usuario);
 	}

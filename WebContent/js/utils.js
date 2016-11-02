@@ -23,3 +23,11 @@ function subtractMonthsDate(date, numMonths) {
 	date.setMonth(date.getMonth() - numMonths);
 	return date;
 }
+
+function logout() {
+	$.get('ProfileAction', {
+        task : "logout"
+	}, function() {
+       
+	});
+}

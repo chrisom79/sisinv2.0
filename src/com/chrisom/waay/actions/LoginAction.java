@@ -1,6 +1,10 @@
-package com.chrisom.actions;
+package com.chrisom.waay.actions;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -54,15 +58,17 @@ public class LoginAction extends HttpServlet {
 		if (user == null || pass == null) {
 			request.setAttribute("message", "Usuario/Password invalidos");
 		} else {
-			String passMD5 = Algorithms.encryptMD5(pass);
 			boolean b = tryLogin(user, pass, false);
 			if (b) {
 				HttpSession session = request.getSession();
-				session.setAttribute("user", _currentUser);
+				List<String> userInfo = _currentUser.getPrincipals().asList();
+				
+				session.setAttribute("user", userInfo.get(0));
 				request.getRequestDispatcher("/home.jsp").forward(request, response);
 			} else {
-				request.setAttribute("message",
-						"Error! user/password erroneos...");
+				request.setAttribute("mensaje",
+						"Usuario y/o password incorrectos");
+				request.getRequestDispatcher("/login.jsp").forward(request, response);
 			}
 		}		
 	}
@@ -73,25 +79,16 @@ public class LoginAction extends HttpServlet {
 				.getSubject();
 
 		if (!_currentUser.isAuthenticated()) {
-			// collect user principals and credentials in a gui specific manner
-			// such as username/password html form, X509 certificate, OpenID,
-			// etc.
-			// We'll use the username/password example here since it is the most
-			// common.
 			UsernamePasswordToken token = new UsernamePasswordToken(username,
 					password);
-			// this is all you have to do to support 'remember me' (no config -
-			// built in!):
 			token.setRememberMe(rememberMe);
-
+			
 			try {
 				_currentUser.login(token);
 				System.out.println("User ["
-						+ _currentUser.getPrincipal().toString()
+						+ token.getPrincipal()
 						+ "] logged in successfully.");
 
-				// save current username in the session, so we have access to
-				// our User model
 				_currentUser.getSession().setAttribute("username", username);
 				return true;
 			} catch (UnknownAccountException uae) {
@@ -108,7 +105,7 @@ public class LoginAction extends HttpServlet {
 						+ "Por favor contacta al administrador.");
 			}
 		} else {
-			return true; // already logged in
+			return true;
 		}
 
 		return false;

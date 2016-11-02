@@ -1,4 +1,4 @@
-package com.chrisom.actions;
+package com.chrisom.waay.actions;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;

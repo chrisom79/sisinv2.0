@@ -1,4 +1,4 @@
-package com.chrisom.report;
+package com.chrisom.waay.report;
 /*
  * JasperReports - Free Java Reporting Library.
  * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.

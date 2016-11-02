@@ -1,4 +1,4 @@
-package com.chrisom.report;
+package com.chrisom.waay.report;
 
 import java.awt.Desktop;
 import java.io.File;

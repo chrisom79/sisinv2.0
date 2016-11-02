@@ -1,9 +1,11 @@
 package com.chrisom.sisinv.utils;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 public class Algorithms {
 	private static final char[] CONSTS_HEX = { '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f' };
@@ -34,4 +36,10 @@ public class Algorithms {
 	    bd = bd.setScale(places, RoundingMode.HALF_UP);
 	    return bd.doubleValue();
 	}
+	 
+	 public static String randomPassword() {
+		 SecureRandom random = new SecureRandom();
+		 
+		 return new BigInteger(50, random).toString(32);
+	 } 
 }

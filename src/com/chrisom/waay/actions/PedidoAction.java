@@ -1,4 +1,4 @@
-package com.chrisom.actions;
+package com.chrisom.waay.actions;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.chrisom.report.ReportGenerator;
 import com.chrisom.sisinv.entity.ItemPedido;
 import com.chrisom.sisinv.entity.NotaRemision;
 import com.chrisom.sisinv.entity.NotaRemisionDetalle;
@@ -27,6 +26,7 @@ import com.chrisom.sisinv.entity.Vendedor;
 import com.chrisom.sisinv.model.PedidoModel;
 import com.chrisom.sisinv.model.ProductoModel;
 import com.chrisom.sisinv.utils.SISINVConstants;
+import com.chrisom.waay.report.ReportGenerator;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

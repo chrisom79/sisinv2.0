@@ -1,10 +1,13 @@
-package com.chrisom.login;
+package com.chrisom.waay.login;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SaltedAuthenticationInfo;
+import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authc.credential.DefaultPasswordService;
+import org.apache.shiro.authc.credential.PasswordMatcher;
 import org.apache.shiro.realm.jdbc.JdbcRealm;
 
 import com.chrisom.sisinv.dao.VendedorDAO;
@@ -21,7 +24,7 @@ public class WaayRealm extends JdbcRealm {
       System.out.println("Username is null.");
       return null;
     }
-
+    
     // read password hash and salt from db
     VendedorDAO dao = new VendedorDAO();
     final Vendedor user = dao.findVendedorByUser(username);
@@ -31,10 +34,14 @@ public class WaayRealm extends JdbcRealm {
       return null;
     }
 
-    // return salted credentials
-    SaltedAuthenticationInfo info = new WaaySaltedAuthentificationInfo(username, user.getPassword(), user.getSalt());
-
-    return info;
+    
+    DefaultPasswordService passwordService = new DefaultPasswordService();
+    String encPass = passwordService.encryptPassword(userPassToken.getPassword());
+    Boolean match =passwordService.passwordsMatch(userPassToken.getPassword(), user.getPassword());
+    if(match)
+    	return new SimpleAuthenticationInfo(username, user.getPassword(), getName());
+    else 
+    	return null;
   }
 
 }

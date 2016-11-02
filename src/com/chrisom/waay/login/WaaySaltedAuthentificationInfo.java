@@ -1,9 +1,10 @@
-package com.chrisom.login;
+package com.chrisom.waay.login;
 
 import org.apache.shiro.authc.SaltedAuthenticationInfo;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
+import org.apache.shiro.subject.SimplePrincipalMap;
 import org.apache.shiro.util.ByteSource;
 import org.apache.shiro.util.SimpleByteSource;
 
@@ -12,12 +13,16 @@ public class WaaySaltedAuthentificationInfo implements SaltedAuthenticationInfo 
 	private final String username;
 	private final String password;
 	private final String salt;
+	private final String nombre;
+	private final String id;
 	
-	public WaaySaltedAuthentificationInfo(String username, String password, String salt) {
+	public WaaySaltedAuthentificationInfo(String username, String password, String salt, String nombre, String id) {
 		super();
 		this.username = username;
 		this.password = password;
 		this.salt = salt;
+		this.nombre = nombre;
+		this.id = id;
 	}
 
 	@Override
@@ -27,7 +32,13 @@ public class WaaySaltedAuthentificationInfo implements SaltedAuthenticationInfo 
 
 	@Override
 	public PrincipalCollection getPrincipals() {
-		PrincipalCollection coll = new SimplePrincipalCollection(username, username);
+		PrincipalCollection coll = new SimplePrincipalMap(){
+			{
+				put("username", username);
+				put("id", id);
+				put("nombre", nombre);
+			}
+		};
 	    return coll;
 	}
 

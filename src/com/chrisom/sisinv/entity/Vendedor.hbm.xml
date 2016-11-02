@@ -25,10 +25,7 @@
         </property>
         <property name="email" type="string">
             <column name="email" length="50" />
-        </property>
-        <property name="salt" type="string">
-            <column name="salt" length="256" />
-        </property>
+        </property>        
         <property name="habilitado" type="java.lang.Boolean">
             <column name="habilitado" default="0" />
         </property>

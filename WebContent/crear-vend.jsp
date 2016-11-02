@@ -26,7 +26,8 @@
 	    			number : true
 	    		},
 	    		txtEmail : {
-	    			email : true
+	    			email : true,
+	    			required : true
 	    		}
 	    	},
 	    	 errorPlacement: function (error, element) {

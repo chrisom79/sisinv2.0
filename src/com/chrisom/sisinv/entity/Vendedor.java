@@ -23,7 +23,6 @@ public class Vendedor implements java.io.Serializable {
 	private Boolean habilitado;
 	private Set notaRemisions = new HashSet(0);
 	private Set comisiones = new HashSet(0);
-	private String salt;
 
 	public Vendedor() {
 	}
@@ -127,11 +126,4 @@ public class Vendedor implements java.io.Serializable {
 		this.comisiones = comisiones;
 	}
 
-	public String getSalt() {
-		return salt;
-	}
-
-	public void setSalt(String salt) {
-		this.salt = salt;
-	}
 }

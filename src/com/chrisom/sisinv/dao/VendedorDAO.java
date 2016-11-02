@@ -7,6 +7,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.chrisom.sisinv.entity.Vendedor;
+import com.chrisom.sisinv.utils.WaayException;
 
 public class VendedorDAO implements DAOInterface<Vendedor>{
 	
@@ -177,9 +178,22 @@ public class VendedorDAO implements DAOInterface<Vendedor>{
 			vendedor = (Vendedor) query.uniqueResult();
 		} catch (Exception ex) {
 			System.out.println(ex.getStackTrace());
-		} finally {
-			//SessionFactoryDB.shutdown();
-		}
+		} 
+		
+		return vendedor;
+	}
+	
+	public Vendedor finVendedorByEmail(String email) {		
+		Session session = SessionFactoryDB.getSessionFactory().openSession();
+		Vendedor vendedor = null;
+		try {
+			Query query = session.createQuery("from Vendedor where email = :email");
+			query.setParameter("email", email);
+		
+			vendedor = (Vendedor) query.uniqueResult();
+		} catch (Exception ex) {
+			System.out.println(ex.getStackTrace());
+		} 
 		
 		return vendedor;
 	}
@@ -199,6 +213,22 @@ public class VendedorDAO implements DAOInterface<Vendedor>{
 			
 		} 
 		
+	}
+	
+	public void updatePassword(String id, String pass) throws WaayException {
+		Session session = SessionFactoryDB.getSessionFactory().openSession();
+		try {
+			session.beginTransaction();
+			Query query = session.createQuery("UPDATE Vendedor set password = :pass WHERE usuario = :id");
+			query.setParameter("pass", pass);
+			query.setParameter("id", id);
+			query.executeUpdate();
+			session.getTransaction().commit();
+		} catch (Exception ex) {
+			System.out.println(ex.getStackTrace().toString());
+			session.getTransaction().rollback();
+			throw new WaayException("Password no actualizado: " + ex);
+		} 
 	}
 
 	public void logicDeleteById(String field) {

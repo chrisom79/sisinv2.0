@@ -1,16 +1,15 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-3.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
-	<jsp:include page="header.jsp" />
-	<style type="text/css">
+    <title>My first template</title>
+    <style type="text/css">
 	 	html,
 		body {
-		  background: #101010;
+		  background: #F5F5F5;
 		  padding: 10px;
 		  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+		  text-align: center;
 		}
 		/*=== 2. Anchor Link ===*/
 		a {
@@ -23,7 +22,7 @@
 		}
 		/*=== 3. Text Outside the Box ===*/
 		.etc-login-form {
-		  color: #919191;
+		  color: #757575;
 		  padding: 10px 20px;
 		}
 		.etc-login-form p {
@@ -31,9 +30,10 @@
 		}
 		/*=== 4. Main Form ===*/
 		.login-form-1 {
-		  max-width: 300px;
+		  max-width: 800px;
 		  border-radius: 5px;
 		  display: inline-block;
+		 
 		}
 		.main-login-form {
 		  position: relative;
@@ -70,6 +70,7 @@
 		  color: #999999;
 		  border-radius: 8px;
 		  padding: 10px 20px;
+		  text-align:left;
 		}
 		.login-group-checkbox {
 		  padding: 5px 0;
@@ -267,59 +268,60 @@
 		}
 		/*=== 9. Misc ===*/
 		.logo {
-		  padding: 15px 0;
-		  font-size: 25px;
-		  color: #aaaaaa;
+		  padding: 18px 0;
+		  font-size: 20px;
+		  color: #757575;
 		  font-weight: bold;
 		}
+		
+		.waves-effect{position:relative;cursor:pointer;display:inline-block;overflow:hidden;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;vertical-align:middle;z-index:1;will-change:opacity, transform;transition:.3s ease-out}.waves-effect .waves-ripple{position:absolute;border-radius:50%;width:20px;height:20px;margin-top:-10px;margin-left:-10px;opacity:0;background:rgba(0,0,0,0.2);transition:all 0.7s ease-out;transition-property:opacity, -webkit-transform;transition-property:transform, opacity;transition-property:transform, opacity, -webkit-transform;-webkit-transform:scale(0);transform:scale(0);pointer-events:none}.waves-effect.waves-light .waves-ripple{background-color:rgba(255,255,255,0.45)}
+		.btn, .btn-large, .btn-flat {
+		    border: none;
+		    border-radius: 2px;
+		    display: inline-block;
+		    height: 36px;
+		    line-height: 36px;
+		    padding: 0 2rem;
+		    text-transform: uppercase;
+		    vertical-align: middle;
+		    -webkit-tap-highlight-color: transparent;
+		}
+		
+		.btn, .btn-large {
+		    text-decoration: none;
+		    color: #fff;
+		    background-color: #26a69a;
+		    text-align: center;
+		    letter-spacing: .5px;
+		    transition: .2s ease-out;
+		    cursor: pointer;
+		}
 	 </style>
-	<script  type="text/javascript">
-	
-	</script>
-
 </head>
 <body>
 	<div class="text-center" style="padding:50px 0">
-	<div class="logo">Password olvidado</div>
-		<!-- Main Form -->
 		<div class="login-form-1">
-			<form id="forgot-password-form" class="text-left" role="form" action="OlvidadoAction" method="GET">
+			
+			<div class="logo">Waay</div>
 				<div class="etc-login-form">
-					<p>Si el usuario en su registro tiene correctamente su correo electronico, las instrucciones seran enviadas a dicha cuenta, junto con su reset de password.</p>
+					<h3> Recuperacion de password</h3>
+					<p>En este correo se te ha proporcionado tu nuevo password, es temporal por lo tanto debes de cambiarlo en la aplicacion. En la parte de abajo se te dan los pasos para que asignes tu propio password.</p>
+					<p>Este es tu nuevo password: <b>pswd</b></p>
 				</div>
-				<div class="login-form-main-message"></div>
-				<div class="main-login-form">
-					<div class="login-group">
-						<div class="form-group">
-							<label for="fp_email" class="sr-only">Correo electronico</label>
-							<input type="text" class="form-control" id="fp_email" name="fp_email" placeholder="correo electronico">
-						</div>
-					</div>
-					<button type="submit" class="login-button"><i class="fa fa-chevron-right"></i></button>
-				</div>
-				<div class="etc-login-form">
-					<p>¿Ya tienes una cuenta? <a href="login.jsp">login aquí</a></p>
-				</div>
-			</form>
-			<c:if test="${not empty mensaje}">
-               <div class="col-lg-24">
-                   <div class="alert alert-success alert-dismissable">
-                       <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                       <i class="fa fa-info-circle"></i>  <c:out value="${mensaje}" />
-                   </div>
-               </div>
-            </c:if>
-            <c:if test="${not empty error}">
-               <div class="col-lg-24">
-                   <div class="alert alert-danger alert-dismissable">
-                       <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                       <i class="fa fa-info-circle"></i>  <c:out value="${error}" />
-                   </div>
-               </div>
-            </c:if>
-		</div>
-		<!-- end:Main Form -->
-</div>
-	
+	    		<hr>
+	    		<div class="login-form-1">
+	    		<div class="login-group">
+	    			<h3>Pasos para cambiar password</h3>
+	    			<p>1. Accede a la aplicacion, dando click en el boton   <a href="http://chrisom.jvmhost.net/sisinv2.0/" class="waves-effect waves-light btn">Waay</a></p>
+	    			<p>2. Usa tu usuario y el password que esta sobre este correo</p>
+	    			<p>3. En la parte de arriba, lado izquierdo click sobre tu nombre de usuario</p>
+	    			<p>4. Selecciona la opcion ajustes sobre el menu que se desplega</p>
+	    			<p>5. Introduce el nuevo password un par de veces como se indica</p>
+	    			<p>6. Presiona el boton cambiar y tu nuevo password sera cambiado de acuerdo al que proporcionaste</p>
+	    			</div>
+	    		</div>
+	    	</div>
+	    </div>
+    </div> 
 </body>
 </html>
