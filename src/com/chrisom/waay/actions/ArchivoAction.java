@@ -151,15 +151,19 @@ public class ArchivoAction extends HttpServlet {
 		Integer index = 0;
 		List<Producto> prods = model.findProductoByParameters(null);
 		Map<Integer, Object[]> data = new HashMap<Integer, Object[]>();
-		data.put(++index, new Object[] {"Codigo", "Nombre", "Precio compra", "Precio venta", "IVA"});
+		data.put(++index, new Object[] {"Codigo", "Nombre", "Piezas", "Precio compra", "IVA", "Ganancia", "Precio venta"});
 		sheet.setColumnWidth(0, 20*256);
 		sheet.setColumnWidth(1, 55*256);
-		sheet.setColumnWidth(2, 10*256);
+		sheet.setColumnWidth(2, 6*256);
 		sheet.setColumnWidth(3, 10*256);
 		sheet.setColumnWidth(4, 4*256);
+		sheet.setColumnWidth(5, 8*256);
+		sheet.setColumnWidth(6, 10*256);
+		
 		
 		for(Producto prod : prods) {
-			data.put(++index, new Object[]{prod.getId(), prod.getNombre(), prod.getPrecioCompra(), prod.getPrecioCompra() + (prod.getPrecioCompra() * (Double.valueOf(prod.getPorcentaje())/100)), prod.getIva()?"Si":"No"});
+			data.put(++index, new Object[]{prod.getId(), prod.getNombre(), prod.getPiezas(), prod.getPrecioCompra(), prod.getIva()?"Si":"No", prod.getPorcentaje() + "%",
+					prod.getPrecioCompra() + (prod.getPrecioCompra() * (Double.valueOf(prod.getPorcentaje())/100))});
 		}
 		 
 		Set<Integer> keyset = data.keySet();

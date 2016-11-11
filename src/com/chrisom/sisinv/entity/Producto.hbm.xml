@@ -29,6 +29,12 @@
         <property name="habilitado" type="java.lang.Boolean">
             <column name="habilitado" />
         </property>
+        <property name="usuarioLastUpd" type="string">
+            <column name="user_last_upd" />
+        </property>
+        <property name="fechaLastUpd" type="timestamp">
+            <column name="date_last_upd" />
+        </property>
         <many-to-one name="oferta" class="com.chrisom.sisinv.entity.Oferta" fetch="join" lazy="false">
             <column name="oferta_id" length="7" />
         </many-to-one>

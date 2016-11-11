@@ -30,8 +30,9 @@ public class Producto implements java.io.Serializable {
 	private Boolean habilitado;
 	@Expose
 	private Oferta oferta;
-	
-	private Set notaRemisionDetalles = new HashSet(0);
+	private String usuarioLastUpd;
+	private Date fechaLastUpd;
+		private Set notaRemisionDetalles = new HashSet(0);
 
 	public Producto() {
 	}
@@ -139,6 +140,22 @@ public class Producto implements java.io.Serializable {
 
 	public void setOferta(Oferta oferta) {
 		this.oferta = oferta;
+	}
+
+	public String getUsuarioLastUpd() {
+		return usuarioLastUpd;
+	}
+
+	public void setUsuarioLastUpd(String usuarioLastUpd) {
+		this.usuarioLastUpd = usuarioLastUpd;
+	}
+
+	public Date getFechaLastUpd() {
+		return fechaLastUpd;
+	}
+
+	public void setFechaLastUpd(Date fechaLastUpd) {
+		this.fechaLastUpd = fechaLastUpd;
 	}
 	
 }

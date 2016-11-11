@@ -1,6 +1,7 @@
 package com.chrisom.waay.actions;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -8,6 +9,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 
 import com.chrisom.sisinv.entity.Producto;
 import com.chrisom.sisinv.model.PedidoModel;
@@ -85,7 +89,7 @@ public class ProductoAction extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+		Subject _currentUser = SecurityUtils.getSubject();
 		String task = request.getParameter("task");
 		ProductoModel model = new ProductoModel();
 		
@@ -108,10 +112,13 @@ public class ProductoAction extends HttpServlet {
 			Integer ganancia = Integer.valueOf(request.getParameter("txtGanancia"));
 			Boolean iva = Boolean.valueOf(request.getParameter("txtIVA"));
 			String comision = request.getParameter("txtComision");
+			List<String> userInfo = _currentUser.getPrincipals().asList();
 			
 			Producto producto = new Producto(codigo, nombre, precio, ganancia, iva);
 			producto.setPiezas(piezas);
 			producto.setComision(Integer.valueOf(comision));
+			producto.setFechaLastUpd(new Date());
+			producto.setUsuarioLastUpd(userInfo.get(0));
 			
 			String id = model.insertProducto(producto);
 			if(id != null) {
@@ -132,15 +139,20 @@ public class ProductoAction extends HttpServlet {
 			Boolean iva = Boolean.valueOf(request.getParameter("txtIVA"));
 			String oldCodigo = request.getParameter("prevId");
 			String comision = request.getParameter("txtComision");
+			List<String> userInfo = _currentUser.getPrincipals().asList();
 			
 			Producto producto = new Producto(codigo, nombre, precio, ganancia, iva);
 			producto.setPiezas(piezas);
+			producto.setFechaLastUpd(new Date());
+			producto.setUsuarioLastUpd(userInfo.get(0));
+			
 			if(comision != null)
 				producto.setComision(Integer.valueOf(comision));
 			
 			if(!codigo.equals(oldCodigo)) {
 				model.deleteById(oldCodigo);
-			}
+			}			
+			
 			model.updateProducto(producto);
 			request.setAttribute("mensaje", "El producto ha sido actualizado");
 			request.getRequestDispatcher("/home.jsp").forward(request, response);
