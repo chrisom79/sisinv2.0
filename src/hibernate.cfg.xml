@@ -6,7 +6,7 @@
     <session-factory name="chrisomj_dbsisinv">
         <property name="hibernate.bytecode.use_reflection_optimizer">false</property>
         <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-        <property name="hibernate.connection.password">chr1som9+Ml</property>
+        <property name="hibernate.connection.password">xxxxxxxxxx</property>
         <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/chrisomj_dbsisinv</property>
         <property name="hibernate.connection.username">chrisomj_root</property>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLInnoDBDialect</property>
